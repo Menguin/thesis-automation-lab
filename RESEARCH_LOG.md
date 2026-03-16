@@ -80,3 +80,26 @@
 **Root Cause:** Playwright's CI architecture requires downloading full browser binaries (Chromium, Firefox, and WebKit) plus all system dependencies onto a clean Ubuntu server on every run. This is fundamentally different from Cypress, which bundles its browser with `npm ci`, and Selenium, which uses the pre-installed Chrome via `setup-chrome@v2`. The actual test execution accounts for only ~5-10 seconds of the total — the remaining ~90 seconds is environment setup overhead.
 **Resolution:** Implemented GitHub Actions browser caching via `actions/cache@v4`. The cache uses `package-lock.json` as its key, meaning browsers are only re-downloaded when dependencies change. Subsequent runs restore from cache, reducing Playwright CI time from ~1m 39s to ~20-30s.
 **Thesis Insight:** This is a significant finding for the "Operational Overhead" and "CI/CD Compatibility" dimensions of the comparative analysis. Playwright's requirement to manage its own browser binaries is both a strength (version consistency, cross-browser support) and a cost (setup time, storage overhead). Cypress and Selenium both delegate browser management to the host environment, which reduces CI setup time but introduces a different risk — dependency on whatever browser version the environment provides. The caching solution mitigates Playwright's overhead in practice, but the architectural reason for that overhead is a meaningful data point in the comparative study.
+
+## Milestone: CI Pipeline Performance Benchmarking Complete
+**Date:** March 16, 2026
+**Status:** All three frameworks executing within expected CI performance parameters. Playwright browser caching confirmed operational.
+
+## CI Execution Time Benchmark (GitHub Actions, ubuntu-latest)
+| Framework | Execution Time | Browser Source |
+|---|---|---|
+| Selenium | 40s | Pre-installed Chrome via `setup-chrome@v2` |
+| Cypress | 38s | Electron bundled inside `node_modules` via `npm ci` |
+| Playwright | 1m 7s | 437MB browser cache restored from GitHub Actions cache |
+
+**Pre-caching baseline (Playwright):** 1m 39s
+**Post-caching result (Playwright):** 1m 7s
+**Time saved by caching:** ~32 seconds per run
+
+**Cache Confirmation:**
+```
+Cache hit for: playwright-a29110c79baf5b230d371746582d78f428d6d85744d27be9ebf4a252011c
+Cache Size: ~437 MB (458013712 B)
+Cache restored successfully
+```
+**Thesis Insight:** The CI benchmark reveals a fundamental architectural trade-off between the three frameworks. Selenium and Cypress both achieve sub-40 second CI execution by delegating browser management to the host environment — Selenium uses whatever Chrome the server provides, and Cypress bundles Electron directly into its npm package. Playwright's approach is fundamentally different: it ships and manages its own browser binaries (Chromium, Firefox, WebKit), totalling 437MB. This is the measurable cost of Playwright's cross-browser consistency guarantee. While caching reduces the overhead from 1m 39s to 1m 7s, the 437MB transfer remains unavoidable because the binaries must be restored to the runner on every execution. This trade-off — greater environment control at the cost of higher setup overhead — is a significant finding in the "Operational Overhead" and "CI/CD Compatibility" dimensions of the comparative analysis and directly supports the thesis argument that no single framework is universally optimal across all evaluation criteria.
