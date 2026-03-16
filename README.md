@@ -1,5 +1,5 @@
 # Thesis Automation Framework Documentation
-This document outlines the configuration, command-line operations, and directory architecture for the comparative analysis of three browser automation frameworks: Selenium, Playwright, and Cypress. 
+This document outlines the configuration, command-line operations, and directory architecture for the comparative analysis oftwo testing frameworks (Playwright, Cypress) and one browser automation library (Selenium) — tested against a controlled e-commerce testing environment to benchmark performance, developer experience, and data collection capabilities.. 
 ---
 ## 1. Project Configuration (`package.json`, `playwright.config.js` & `cypress.config.js`)
 In this Node.js environment, the configuration is split between package management and framework-specific execution rules:
