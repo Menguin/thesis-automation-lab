@@ -69,7 +69,7 @@ jobs:
         run: npm ci
 
       - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
 
       - name: Run Selenium tests
         run: node selenium-station/login-test.js
