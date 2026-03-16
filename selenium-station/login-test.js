@@ -1,12 +1,22 @@
 const { Builder, By, until } = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
 
 async function ecommerceLoginFlowValidation() {
 
   // Start the timer
   const startTime = Date.now();
 
-  // 1. Launch a browser instance (Chrome)
-  const driver = await new Builder().forBrowser('chrome').build();
+  // Configure Chrome to run headless (required for CI environments with no display)
+  let options = new chrome.Options();
+  options.addArguments('--headless=new');
+  options.addArguments('--no-sandbox');
+  options.addArguments('--disable-dev-shm-usage');
+
+  // 1. Launch a headless Chrome instance
+  const driver = await new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(options)
+    .build();
 
   try {
 
