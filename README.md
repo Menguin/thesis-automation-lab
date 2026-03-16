@@ -46,6 +46,9 @@ During execution and installation, the frameworks automatically generate the fol
 ## 5. Version Control & Reproducibility
 This project is version-controlled via Git and publicly available on GitHub. The `.gitignore` configuration intentionally excludes auto-generated and environment-specific files while preserving all benchmark data files under `/results/`. This ensures the raw thesis evidence remains visible and independently verifiable by examiners and reviewers.
 
+### Continuous Integration
+A GitHub Actions CI pipeline (`.github/workflows/ci.yml`) automatically executes all three test stations on every push to `main`. Each framework runs as an isolated job on a clean `ubuntu-latest` cloud server, independently verifying that results are not specific to the local Windows 11 development environment. The CI environment is pinned to Node.js 20 LTS to ensure benchmark conditions remain consistent across all runs.
+
 ### To Reproduce This Lab
 1. Clone this repository.
 2. Run `npm run setup-lab` to restore the exact dependency versions via `npm ci`.
