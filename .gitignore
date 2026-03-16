@@ -1,0 +1,17 @@
+# 1. Dependencies (Crucial to exclude: 20,000+ files)
+node_modules/
+
+# 2. Automated Diagnostic Reports (Not needed for final data)
+test-results/
+playwright-report/
+
+# 3. THESIS DATA (Evidence for benchmarks)
+# I did NOT ignore results/*.json so the raw data remains 
+# visible and verifiable on GitHub.
+
+# 4. Security & Environment
+.env
+
+# 5. OS Junk Files
+.DS_Store
+Thumbs.db

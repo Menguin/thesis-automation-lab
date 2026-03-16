@@ -1,0 +1,20 @@
+{
+  "name": "thesis-automation-lab",
+  "version": "1.0.0",
+  "description": "My Master's Thesis: Comparing Selenium, Playwright, and Cypress",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "setup-lab": "npm ci && npx playwright install",
+    "run-selenium": "node selenium-station/login-test.js",
+    "run-playwright": "npx playwright test playwright-station/ --reporter=json > results/playwright.json",
+    "run-cypress": "npx cypress run",
+    "run-cypress-open": "npx cypress open"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.42.0",
+    "cypress": "^13.7.0",
+    "selenium-webdriver": "^4.18.0"
+  }
+}
