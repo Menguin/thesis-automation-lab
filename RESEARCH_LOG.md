@@ -49,3 +49,19 @@
 * `.env` — Security and environment variables
 * `.DS_Store` / `Thumbs.db` — OS-generated junk files
 **Thesis Insight:** The discipline of version control — specifically the intentional decision of what to include and exclude — is itself a research methodology consideration. Retaining benchmark output in the repository ensures full transparency and reproducibility of results.
+## Milestone: Continuous Integration (CI) Pipeline Deployed
+**Date:** March 16, 2026
+**Status:** GitHub Actions workflow operational. All three frameworks executing automatically on every push to `main`.
+
+**Changes Implemented:**
+1. **`.github/workflows/ci.yml` created** — A GitHub Actions workflow was configured to automatically trigger all three test stations in parallel on every push. Each framework runs as an isolated job on a clean `ubuntu-latest` cloud server, proving that results are not specific to the local Windows 11 development environment.
+2. **Selenium headless mode enabled** — Selenium required manual configuration to run in a headless (no display) mode for CI compatibility. Three Chrome arguments were added to `login-test.js`:
+   - `--headless=new` — Runs Chrome invisibly with no GUI
+   - `--no-sandbox` — Required because GitHub Actions executes as root on Linux
+   - `--disable-dev-shm-usage` — Prevents memory crashes on cloud server shared memory limits
+3. **Playwright and Cypress required no changes** — Both frameworks detected the CI environment automatically and switched to headless execution without configuration. This is a direct, measurable contrast with Selenium's manual instrumentation requirement.
+4. **Playwright results uploaded as CI artifact** — The workflow captures `results/` as a downloadable artifact after each run, meaning benchmark data is preserved at the GitHub Actions job level independently of the repository.
+
+**Thesis Insight:** The CI deployment exposed a fundamental architectural difference between the three frameworks. Playwright and Cypress are CI-native by design — they require zero additional configuration to run in a headless cloud environment. Selenium, as a lower-level browser automation library, delegates all environment management to the developer. This distinction is a significant data point across multiple evaluation dimensions: ease of setup, portability, and operational overhead. The fact that Selenium required three additional system-level flags (`--headless=new`, `--no-sandbox`, `--disable-dev-shm-usage`) to achieve what Playwright and Cypress do automatically is itself a measurable finding.
+
+**Reproducibility Note:** The CI pipeline now serves as an independent, automated proof of reproducibility. Every push to the repository triggers a full execution of all three stations on a clean machine — validating the claim made in Section 5 of the README that the lab can be reproduced in three commands from any environment.
