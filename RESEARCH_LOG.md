@@ -65,3 +65,11 @@
 **Thesis Insight:** The CI deployment exposed a fundamental architectural difference between the three frameworks. Playwright and Cypress are CI-native by design — they require zero additional configuration to run in a headless cloud environment. Selenium, as a lower-level browser automation library, delegates all environment management to the developer. This distinction is a significant data point across multiple evaluation dimensions: ease of setup, portability, and operational overhead. The fact that Selenium required three additional system-level flags (`--headless=new`, `--no-sandbox`, `--disable-dev-shm-usage`) to achieve what Playwright and Cypress do automatically is itself a measurable finding.
 
 **Reproducibility Note:** The CI pipeline now serves as an independent, automated proof of reproducibility. Every push to the repository triggers a full execution of all three stations on a clean machine — validating the claim made in Section 5 of the README that the lab can be reproduced in three commands from any environment.
+
+## Incident Log: March 16, 2026
+### CI Pipeline: Node.js Deprecation Warning
+**Issue:** GitHub Actions deprecation warning on all three workflow jobs.
+**Symptoms:** Warning stating that `actions/checkout@v4`, `actions/setup-node@v4`, and `actions/upload-artifact@v4` were running on Node.js 20 and would be forced to Node.js 24 after June 2nd, 2026.
+**Root Cause:** The GitHub Actions runner infrastructure is migrating from Node.js 20 to Node.js 24. The pinned action versions (`@v4`) were tied to the older runtime.
+**Resolution:** Bumped all GitHub-maintained actions to their Node 24-native versions (`actions/checkout@v5`, `actions/setup-node@v5`, `actions/upload-artifact@v6`). Additionally, the test environment Node version was updated from `18` to `20` (current LTS) across all three jobs to ensure stability and forward compatibility.
+**Thesis Insight:** A deliberate decision was made to pin the CI environment to Node 20 LTS rather than using a dynamic `lts/*` selector. While `lts/*` would automatically track the latest LTS release, it introduces the risk of silent environment changes between benchmark runs — directly undermining the reproducibility requirements of a comparative thesis. Pinning to a specific version ensures that all benchmark data is collected under identical, documented conditions.
