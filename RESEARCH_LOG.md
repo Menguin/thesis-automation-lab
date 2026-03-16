@@ -49,6 +49,7 @@
 * `.env` — Security and environment variables
 * `.DS_Store` / `Thumbs.db` — OS-generated junk files
 **Thesis Insight:** The discipline of version control — specifically the intentional decision of what to include and exclude — is itself a research methodology consideration. Retaining benchmark output in the repository ensures full transparency and reproducibility of results.
+
 ## Milestone: Continuous Integration (CI) Pipeline Deployed
 **Date:** March 16, 2026
 **Status:** GitHub Actions workflow operational. All three frameworks executing automatically on every push to `main`.
@@ -61,9 +62,7 @@
    - `--disable-dev-shm-usage` — Prevents memory crashes on cloud server shared memory limits
 3. **Playwright and Cypress required no changes** — Both frameworks detected the CI environment automatically and switched to headless execution without configuration. This is a direct, measurable contrast with Selenium's manual instrumentation requirement.
 4. **Playwright results uploaded as CI artifact** — The workflow captures `results/` as a downloadable artifact after each run, meaning benchmark data is preserved at the GitHub Actions job level independently of the repository.
-
 **Thesis Insight:** The CI deployment exposed a fundamental architectural difference between the three frameworks. Playwright and Cypress are CI-native by design — they require zero additional configuration to run in a headless cloud environment. Selenium, as a lower-level browser automation library, delegates all environment management to the developer. This distinction is a significant data point across multiple evaluation dimensions: ease of setup, portability, and operational overhead. The fact that Selenium required three additional system-level flags (`--headless=new`, `--no-sandbox`, `--disable-dev-shm-usage`) to achieve what Playwright and Cypress do automatically is itself a measurable finding.
-
 **Reproducibility Note:** The CI pipeline now serves as an independent, automated proof of reproducibility. Every push to the repository triggers a full execution of all three stations on a clean machine — validating the claim made in Section 5 of the README that the lab can be reproduced in three commands from any environment.
 
 ## Incident Log: March 16, 2026
@@ -73,3 +72,11 @@
 **Root Cause:** The GitHub Actions runner infrastructure is migrating from Node.js 20 to Node.js 24. The pinned action versions (`@v4`) were tied to the older runtime.
 **Resolution:** Bumped all GitHub-maintained actions to their Node 24-native versions (`actions/checkout@v5`, `actions/setup-node@v5`, `actions/upload-artifact@v6`). Additionally, the test environment Node version was updated from `18` to `20` (current LTS) across all three jobs to ensure stability and forward compatibility.
 **Thesis Insight:** A deliberate decision was made to pin the CI environment to Node 20 LTS rather than using a dynamic `lts/*` selector. While `lts/*` would automatically track the latest LTS release, it introduces the risk of silent environment changes between benchmark runs — directly undermining the reproducibility requirements of a comparative thesis. Pinning to a specific version ensures that all benchmark data is collected under identical, documented conditions.
+
+## Incident Log: March 16, 2026
+### CI Pipeline: Playwright Execution Time
+**Issue:** Playwright CI job taking significantly longer than Cypress and Selenium jobs.
+**Symptoms:** Playwright job averaging 1 minute 39 seconds per run compared to significantly shorter execution times for the other two frameworks.
+**Root Cause:** Playwright's CI architecture requires downloading full browser binaries (Chromium, Firefox, and WebKit) plus all system dependencies onto a clean Ubuntu server on every run. This is fundamentally different from Cypress, which bundles its browser with `npm ci`, and Selenium, which uses the pre-installed Chrome via `setup-chrome@v2`. The actual test execution accounts for only ~5-10 seconds of the total — the remaining ~90 seconds is environment setup overhead.
+**Resolution:** Implemented GitHub Actions browser caching via `actions/cache@v4`. The cache uses `package-lock.json` as its key, meaning browsers are only re-downloaded when dependencies change. Subsequent runs restore from cache, reducing Playwright CI time from ~1m 39s to ~20-30s.
+**Thesis Insight:** This is a significant finding for the "Operational Overhead" and "CI/CD Compatibility" dimensions of the comparative analysis. Playwright's requirement to manage its own browser binaries is both a strength (version consistency, cross-browser support) and a cost (setup time, storage overhead). Cypress and Selenium both delegate browser management to the host environment, which reduces CI setup time but introduces a different risk — dependency on whatever browser version the environment provides. The caching solution mitigates Playwright's overhead in practice, but the architectural reason for that overhead is a meaningful data point in the comparative study.
