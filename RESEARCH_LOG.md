@@ -103,3 +103,32 @@ Cache Size: ~437 MB (458013712 B)
 Cache restored successfully
 ```
 **Thesis Insight:** The CI benchmark reveals a fundamental architectural trade-off between the three frameworks. Selenium and Cypress both achieve sub-40 second CI execution by delegating browser management to the host environment — Selenium uses whatever Chrome the server provides, and Cypress bundles Electron directly into its npm package. Playwright's approach is fundamentally different: it ships and manages its own browser binaries (Chromium, Firefox, WebKit), totalling 437MB. This is the measurable cost of Playwright's cross-browser consistency guarantee. While caching reduces the overhead from 1m 39s to 1m 7s, the 437MB transfer remains unavoidable because the binaries must be restored to the runner on every execution. This trade-off — greater environment control at the cost of higher setup overhead — is a significant finding in the "Operational Overhead" and "CI/CD Compatibility" dimensions of the comparative analysis and directly supports the thesis argument that no single framework is universally optimal across all evaluation criteria.
+
+## Incident Log: March 16, 2026
+### Framework: Cypress
+**Issue:** Cypress GUI (`cypress open`) Crash Resolution and Version Update.
+
+**Part 1 — GUI Resolution**
+**Symptoms:** Following the original Electron/GPU crash documented above, a second attempt to launch `cypress open` reproduced the same white screen failure, confirming the issue was consistent and environment-specific rather than a one-time anomaly.
+**Resolution:** The following sequence of commands cleared the corrupted Cypress cache and forced a clean reinstallation:
+```bash
+npx cypress cache clear
+npx cypress install
+npm install cypress@latest --save-dev
+npx cypress install
+```
+**Outcome:** Cypress GUI launched successfully after the clean reinstallation. The root cause was a corrupted local Cypress binary cache rather than a permanent GPU/Electron incompatibility.
+**Thesis Insight:** The resolution required four sequential CLI commands and a full cache wipe — a non-trivial recovery process. This is a meaningful data point in the "Ease of Maintenance" and "Developer Experience" dimensions of the comparative analysis. Neither Playwright nor Selenium required equivalent cache management procedures during this research period.
+
+---
+
+**Part 2 — Version Update and Security Warning**
+**Symptoms:** After reinstalling via `cypress@latest`, the following warning appeared on launch:
+```
+Warning: The allowCypressEnv configuration option is enabled. This allows 
+any browser code to read values from Cypress.env(). This is insecure and 
+will be removed in a future major version.
+```
+**Root Cause:** The `cypress@latest` installation pulled a newer version than the originally pinned `^13.7.0` in `package.json`. The newer version introduced stricter security defaults around environment variable access in browser code.
+**Resolution:** Added `allowCypressEnv: false` to `cypress.config.js` to explicitly disable the insecure behaviour and suppress the warning. The `package.json` dependency version was also updated to reflect the currently installed version for reproducibility.
+**Thesis Insight:** This incident highlights a reproducibility risk inherent in using `^` (caret) version pinning in `package.json`. The caret allows automatic minor and patch updates, which in this case silently pulled a newer Cypress version with different security defaults. For a comparative thesis where consistent benchmark conditions are required, this is a notable observation about dependency management discipline across frameworks.

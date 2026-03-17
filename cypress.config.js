@@ -10,5 +10,8 @@ module.exports = defineConfig({
     
     // 3. Keep the folder clean
     supportFile: false, 
+
+     // 4. Disable insecure environment variable access in browser code
+    allowCypressEnv: false,
   },
 });
