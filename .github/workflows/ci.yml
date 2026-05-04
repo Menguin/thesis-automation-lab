@@ -79,3 +79,6 @@ jobs:
 
       - name: Run Selenium tests
         run: node selenium-station/login-test.js
+        
+      - name: Run Selenium tests (EP-01)
+        run: npm run run-selenium-ep01
