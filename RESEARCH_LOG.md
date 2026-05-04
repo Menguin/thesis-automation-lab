@@ -132,3 +132,21 @@ will be removed in a future major version.
 **Root Cause:** The `cypress@latest` installation pulled a newer version than the originally pinned `^13.7.0` in `package.json`. The newer version introduced stricter security defaults around environment variable access in browser code.
 **Resolution:** Added `allowCypressEnv: false` to `cypress.config.js` to explicitly disable the insecure behaviour and suppress the warning. The `package.json` dependency version was also updated to reflect the currently installed version for reproducibility.
 **Thesis Insight:** This incident highlights a reproducibility risk inherent in using `^` (caret) version pinning in `package.json`. The caret allows automatic minor and patch updates, which in this case silently pulled a newer Cypress version with different security defaults. For a comparative thesis where consistent benchmark conditions are required, this is a notable observation about dependency management discipline across frameworks.
+
+---
+
+**## Milestone: Selenium Custom Test Runner Implemented**
+**Date:** May 04, 2026
+**Status:** Selenium station now operates with an automated suite runner, achieving architectural parity with Playwright and Cypress directory scanning.
+
+**Context:**
+As the test suite expanded beyond the initial `login-test.js` to include `ep-01.js`, the Selenium station required a mechanism to execute multiple test files automatically — equivalent to how Cypress discovers `*.cy.js` files via `specPattern` and how Playwright scans the `playwright-station/` directory.
+
+**Changes Implemented:**
+1. **`selenium-station/runner.js` created** — A custom Node.js runner was built to automatically discover and execute all `.js` files within `selenium-station/`. The runner filters out itself, runs each test sequentially, and prints a structured pass/fail summary.
+2. **Error isolation implemented** — Each test is wrapped in `try/catch`. If one fails, the runner continues executing remaining tests rather than crashing the suite.
+3. **CI exit code handling implemented** — `process.exit(1)` is called if any tests fail, correctly signalling to GitHub Actions that the job should be marked as failed.
+4. **`package.json` updated** — `run-selenium` now points to `runner.js`, meaning all future files added to `selenium-station/` are discovered automatically with no further configuration changes.
+
+**Thesis Insight:**
+This milestone surfaces one of the most significant architectural differences between the three frameworks. Cypress and Playwright ship with native test runners that handle file discovery, error isolation, structured reporting, and CI-compatible exit codes out of the box. Selenium is a browser automation library — it provides none of this. Achieving the same suite-level behaviour required the custom development of `runner.js`: approximately 30 lines of infrastructure code that exists solely to compensate for the absence of a built-in runner. This is a concrete, reproducible data point in the Developer Experience and Operational Overhead dimensions of the comparative analysis.
