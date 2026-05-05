@@ -193,3 +193,15 @@ Cypress — zero explicit waits across the entire flow. Two content assertions a
 Playwright — one explicit wait after login, all subsequent page transitions handled automatically. URL assertion uses .not.toHaveURL(/.*step-two/) — the .not negation is consistent with Playwright's built-in assertion API.
 Selenium — three explicit driver.wait() calls required: one after login, one after navigating to the cart, one after clicking Checkout. Each page transition needs its own manual wait. Cypress and Playwright handle these automatically.
 Thesis Insight: DT-R1 is the first multi-transition test in the suite. The number of manual waits required across an equivalent flow — zero for Cypress, one for Playwright, three for Selenium — is a direct and measurable indicator of how much async management each framework delegates to the developer. This is a concrete data point for the Async Handling benchmark.
+
+## Milestone: ST-01 Added — State Transition Testing
+Date: May 05, 2026
+Test: Cart treated as a two-state system. S1 = empty, S2 = has items. Transition tested: S2 → S1 by adding one item then removing it. Badge is asserted after each transition.
+## Observation: State Transitions — Negative Assertions and the Sleep Anti-Pattern
+Date: May 05, 2026
+Context: ST-01 required asserting the cart badge was removed from the page — a negative assertion. This exposed a structural difference between Selenium and the two modern frameworks.
+Cypress and Playwright both provide native polling-based negative assertions. When .should('not.exist') or .not.toBeVisible() is executed, the framework keeps checking until the element is gone. No timing configuration needed.
+Selenium has no equivalent. findElement() throws a fatal crash if the element is missing. The workaround is findElements() (plural), which returns an empty array instead. But findElements() evaluates the page instantly — it does not poll. Because the browser needs a few milliseconds to finish removing the badge after a click, calling it too quickly finds the badge still present and fails the test. The fix was await driver.sleep(300) — a hardcoded pause.
+Why this matters: Hardcoded sleeps are a universally recognised anti-pattern in software engineering. They inflate execution time regardless of actual UI speed, and they cause flakiness when latency spikes push the real update time past the guessed duration.
+
+The sleep was not an implementation choice — it was a structural consequence of Selenium's architecture. This is a reliability difference, not a syntax difference, and directly supports findings in the Async Handling, Developer Experience, and Pipeline Stability dimensions of the comparative analysis.
