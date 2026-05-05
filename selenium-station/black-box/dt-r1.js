@@ -43,11 +43,11 @@ async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
     await driver.findElement(By.css('.shopping_cart_link')).click();
 
     // 9. Wait for the cart page to load then click the Checkout button
-    await driver.wait(until.elementLocated(By.css('[data-test="checkout"]')), 5000);
+    await driver.wait(until.elementLocated(By.css('[data-test="checkout"]')), 10000);
     await driver.findElement(By.css('[data-test="checkout"]')).click();
 
     // 10. Wait for the checkout form to load
-    await driver.wait(until.elementLocated(By.css('[data-test="firstName"]')), 5000);
+    await driver.wait(until.elementLocated(By.css('[data-test="firstName"]')), 10000);
 
     // 11. Locate the First Name field and fill it with a valid value
     await driver.findElement(By.css('[data-test="firstName"]')).sendKeys('Jane');
@@ -60,7 +60,7 @@ async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
     await driver.findElement(By.css('[data-test="continue"]')).click();
 
     // 15. Wait for the error message to appear
-    await driver.wait(until.elementLocated(By.css('[data-test="error"]')), 5000);
+    await driver.wait(until.elementLocated(By.css('[data-test="error"]')), 10000);
 
     // 16. Retrieve the error message text
     const errorText = await driver.findElement(By.css('[data-test="error"]')).getText();

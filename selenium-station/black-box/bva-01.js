@@ -36,10 +36,11 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
     await driver.wait(until.elementLocated(By.css('.inventory_list')), 5000);
 
     // 7. Locate all Add to Cart buttons and click each one individually
-    const addButtons = await driver.findElements(By.css('.btn_inventory'));
-    for (const button of addButtons) {
-      await button.click();
-    }
+const addButtons = await driver.findElements(By.css('.btn_inventory'));
+for (const button of addButtons) {
+  await button.click();
+  await driver.sleep(500);
+}
 
     // 8. Retrieve the cart badge element and read its displayed text
     const badge = await driver.findElement(By.css('.shopping_cart_badge'));

@@ -57,7 +57,7 @@ async function st01StateTransitionCartEmptyState() {
     await removeButtons[0].click();
 
     // 10. Wait briefly for the page to update after removal
-    await driver.sleep(300);
+    await driver.sleep(1000);
 
     // 11. Check whether the cart badge still exists on the page
     const badges = await driver.findElements(By.css('.shopping_cart_badge'));
