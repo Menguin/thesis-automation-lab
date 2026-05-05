@@ -46,3 +46,4 @@ console.log(`❌ Failed: ${failed}\n`);
 if (failed > 0) {
   process.exit(1);
 }
+
