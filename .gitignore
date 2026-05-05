@@ -20,3 +20,4 @@ Thumbs.db
 cypress-station/eg-01.cy.js
 playwright-station/eg-01.spec.js
 selenium-station/eg-01.js
+cypress/screenshots/eg-01.cy.js/EG-01  Error Guessing — Checkout Form Validation -- Whitespace-only input in all fields should not bypass required field validation (failed).png
