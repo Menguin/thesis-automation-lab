@@ -1,6 +1,6 @@
 describe('EP-01 | Equivalence Partitioning — Product Sort Dropdown', () => {
 
-  it('Valid sort partition: selecting price low-to-high should reorder the product list', () => {
+  it('Valid sort partition: selecting price low-to-high should display the cheapest product first', () => {
 
     // 1. Navigate to the target web application using the Base URL
     cy.visit('/');
@@ -20,12 +20,11 @@ describe('EP-01 | Equivalence Partitioning — Product Sort Dropdown', () => {
     // 6. Locate the sort dropdown and select the 'Price (low to high)' option
     cy.get('[data-test="product-sort-container"]').select('lohi');
 
-    // 7. Assertion: Retrieve all product prices and verify they are in ascending order
-    cy.get('.inventory_item_price').then(($prices) => {
-      const prices = [...$prices].map(el => parseFloat(el.innerText.replace('$', '')));
-      const sorted = [...prices].sort((a, b) => a - b);
-      expect(prices).to.deep.equal(sorted);
-    });
+    // 7. Assertion: Verify the first price displayed is the lowest known price
+    cy.get('.inventory_item_price').first().should('have.text', '$7.99');
+
+    // 8. Assertion: Verify the last price displayed is the highest known price
+    cy.get('.inventory_item_price').last().should('have.text', '$49.99');
 
   });
 

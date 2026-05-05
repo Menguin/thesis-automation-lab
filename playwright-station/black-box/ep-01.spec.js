@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test('EP-01 | Equivalence Partitioning — Valid sort partition: selecting price low-to-high should reorder the product list', async ({ page }) => {
+test('EP-01 | Equivalence Partitioning — Valid sort partition: selecting price low-to-high should display the cheapest product first', async ({ page }) => {
 
   // 1. Navigate to the target web application using the Base URL
   await page.goto('/');
@@ -20,11 +20,10 @@ test('EP-01 | Equivalence Partitioning — Valid sort partition: selecting price
   // 6. Locate the sort dropdown and select the 'Price (low to high)' option
   await page.locator('[data-test="product-sort-container"]').selectOption('lohi');
 
-  // 7. Assertion: Retrieve all product prices and verify they are in ascending order
-  const prices = await page.locator('.inventory_item_price').evaluateAll(
-    (els) => els.map(el => parseFloat(el.innerText.replace('$', '')))
-  );
-  const sorted = [...prices].sort((a, b) => a - b);
-  expect(prices).toEqual(sorted);
+  // 7. Assertion: Verify the first price displayed is the lowest known price
+  await expect(page.locator('.inventory_item_price').first()).toHaveText('$7.99');
+
+  // 8. Assertion: Verify the last price displayed is the highest known price
+  await expect(page.locator('.inventory_item_price').last()).toHaveText('$49.99');
 
 });

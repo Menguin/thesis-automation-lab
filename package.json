@@ -10,8 +10,7 @@
     "run-playwright": "npx playwright test playwright-station/ --reporter=json > results/playwright.json",
     "run-cypress": "npx cypress run",
     "run-cypress-open": "npx cypress open" ,
-    "run-selenium": "node selenium-station/login-test.js",
-    "run-selenium-ep01": "node selenium-station/ep-01.js"
+    "run-selenium": "node selenium-station/runner.js"
   },
   "dependencies": {
     "@playwright/test": "^1.42.0",
