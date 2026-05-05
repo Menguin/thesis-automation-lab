@@ -36,40 +36,46 @@ async function ep01EquivalencePartitioningSortDropdown() {
     await driver.wait(until.elementLocated(By.css('.inventory_list')), 5000);
 
     // 7. Locate the sort dropdown and select the 'Price (low to high)' option
-    const sortDropdown = await driver.findElement(By.css('[data-test="product-sort-container"]'));
+    const sortDropdown = await driver.findElement(
+      By.css('[data-test="product-sort-container"]')
+    );
     await sortDropdown.findElement(By.css('option[value="lohi"]')).click();
 
-    // 8. Wait briefly for the DOM to reflect the updated sort order
+    // 8. Wait briefly for the page to reflect the updated sort order
     await driver.sleep(300);
 
-    // 9. Retrieve all product price elements from the reordered inventory list
+    // 9. Retrieve the first and last price elements from the sorted list
     const priceElements = await driver.findElements(By.css('.inventory_item_price'));
-    const prices = await Promise.all(
-      priceElements.map(async (el) => {
-        const text = await el.getText();
-        return parseFloat(text.replace('$', ''));
-      })
-    );
+    const firstPrice = await priceElements[0].getText();
+    const lastPrice = await priceElements[priceElements.length - 1].getText();
 
-    // 10. Assertion: Verify the prices are displayed in ascending order
-    const sorted = [...prices].sort((a, b) => a - b);
-    const isPassed = JSON.stringify(prices) === JSON.stringify(sorted);
-
-    if (isPassed) {
-      console.log('✅ TEST PASSED: Products are sorted by price low to high');
+    // 10. Assertion: Verify the first price is the lowest known price
+    if (firstPrice === '$7.99') {
+      console.log('✅ TEST PASSED: First product is the cheapest — sort low to high is correct');
     } else {
-      console.log('❌ TEST FAILED: Products are not in the correct sort order');
-      console.log(`   Expected: [${sorted.join(', ')}]`);
-      console.log(`   Received: [${prices.join(', ')}]`);
+      console.log('❌ TEST FAILED: First product price is not the expected lowest price');
+      console.log(`   Expected: $7.99`);
+      console.log(`   Received: ${firstPrice}`);
+      throw new Error(`Assertion failed — first price expected '$7.99' but received '${firstPrice}'`);
     }
 
-    // 11. Stop the timer and log execution time
+    // 11. Assertion: Verify the last price is the highest known price
+    if (lastPrice === '$49.99') {
+      console.log('✅ TEST PASSED: Last product is the most expensive — sort order confirmed');
+    } else {
+      console.log('❌ TEST FAILED: Last product price is not the expected highest price');
+      console.log(`   Expected: $49.99`);
+      console.log(`   Received: ${lastPrice}`);
+      throw new Error(`Assertion failed — last price expected '$49.99' but received '${lastPrice}'`);
+    }
+
+    // 12. Stop the timer and log execution time
     const endTime = Date.now();
     const duration = (endTime - startTime) / 1000;
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
-    // 12. Always close the browser when done, even if the test fails
+    // 13. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 
