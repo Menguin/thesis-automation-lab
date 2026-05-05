@@ -150,3 +150,32 @@ As the test suite expanded beyond the initial `login-test.js` to include `ep-01.
 
 **Thesis Insight:**
 This milestone surfaces one of the most significant architectural differences between the three frameworks. Cypress and Playwright ship with native test runners that handle file discovery, error isolation, structured reporting, and CI-compatible exit codes out of the box. Selenium is a browser automation library — it provides none of this. Achieving the same suite-level behaviour required the custom development of `runner.js`: approximately 30 lines of infrastructure code that exists solely to compensate for the absence of a built-in runner. This is a concrete, reproducible data point in the Developer Experience and Operational Overhead dimensions of the comparative analysis.
+
+--------------------------------------------------------------------------------
+
+***Date: May 05, 2026***
+*Subject: Test Suite Refactoring: ISTQB Alignment and DOM State Management*
+Context & Rationale:
+Following the initial implementation of the Equivalence Partitioning (EP-01) and Boundary Value Analysis (BVA-01) test scenarios, a code review was conducted to evaluate the complexity and theoretical alignment of the test scripts across all three stations (Cypress, Playwright, Selenium). This led to a significant refactoring phase to better align the automation logic with formal ISTQB methodologies and to highlight framework-specific architectural behaviors.
+
+1. Alignment with Equivalence Partitioning (EP-01 Refactor):
+
+The Problem: The initial EP-01 script extracted all product prices programmatically, converted them from strings to floats, and performed a mathematical sort. This approach was heavily reliant on direct DOM access (e.g., el.innerText) and complex execution context switching. For instance, Cypress required converting jQuery objects to arrays ([...$prices]), and Playwright utilized evaluateAll() to run JavaScript inside the browser context. This introduced unnecessary layers of complexity and bypassed standard framework APIs.
+
+The Solution: To strictly align with ISTQB Equivalence Partitioning—which dictates verifying representative values of a partition rather than an exhaustive list—the test was refactored. The new implementation asserts the boundaries of the sorted partition: checking that the first item is $7.99 and the last is $49.99 (known, fixed catalog values).
+
+Outcome: This eliminated fragile DOM bypasses and contextual complexity, utilizing only two lines of standard API assertions per framework (e.g., Playwright's expect().toHaveText()).
+
+2. Architectural Differences in State Management (BVA-01 Iteration):
+The implementation of the Boundary Value Analysis scenario (which involves iterating through and clicking multiple "Add to Cart" buttons) surfaced critical differences in how each tool handles changing DOM states:
+
+Cypress (The Managed Approach): Utilizes .each(($btn) => cy.wrap($btn).click()). Because iterating yields a raw DOM element, cy.wrap() is required to re-insert the element back into the Cypress execution chain. This allows Cypress to automatically manage retries and state updates behind the scenes.
+
+Playwright (The Defensive Approach): Iterating through elements that change state (e.g., a button changing to "Remove" upon click) can easily trigger stale element references. Playwright requires a more explicit, defensive pattern using a for loop and the .nth(i) locator. This forces Playwright to re-query the DOM fresh on every iteration, guaranteeing the reference remains valid.
+
+Selenium (The Raw Approach): Utilizes findElements() alongside a standard JavaScript for...of loop. While this straightforward iteration succeeds in the specific context of the SauceDemo application (since the buttons update text but are not removed from the DOM), it lacks built-in stale element protection. In a highly dynamic Single Page Application (SPA), this approach would be highly susceptible to StaleElementReferenceException errors, which would require the manual implementation of defensive querying similar to Playwright.
+
+*Thesis Insight:
+These refactoring decisions highlight a core dimension of the comparative analysis. Cypress heavily abstracts DOM state management and retries, lowering the barrier to entry but obscuring the underlying mechanics. Playwright provides modern, robust querying but expects the developer to explicitly manage state iteration defensively. Selenium provides raw access, leaving both iteration strategy and stale element protection entirely to the engineer's discretion.
+
+--------------------------------------------------
