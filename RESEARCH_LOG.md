@@ -217,3 +217,21 @@ EG-01 and DT-R1 share the same navigation flow. DT-R1 enters valid data and leav
 The sleep duration problem as a measurable finding. 300ms in ST-01, 500ms in EG-01 — both guessed. Cypress and Playwright resolve in the minimum actual time needed. Selenium guesses a fixed duration and hopes it is long enough. The fact that the guess changed between two tests in the same suite illustrates exactly why the sleep anti-pattern degrades reliability.
 Cumulative wait count across the suite: 3 waits + 1 sleep for Selenium.
 Selenium's wait overhead is accumulating with every multi-step test added to the suite. This is a measurable contributor to execution time differences in the benchmark.
+
+## Incident Log: CI Timing Failures — Selenium Station
+Date: May 05, 2026
+Failures across two CI runs:
+
+dt-r1.js — timed out waiting for [data-test="checkout"] then [data-test="firstName"]
+st-01.js — cart badge still visible after sleep(300)
+bva-01.js — cart badge showed 4 instead of 6 — clicks fired faster than CI could register them
+
+Root cause: All hardcoded timing values were calibrated on a local Windows 11 machine. The GitHub Actions ubuntu-latest runner runs at a different speed and every guess was wrong.
+Fixes applied:
+
+dt-r1.js — all three driver.wait() timeouts raised from 5000 to 10000
+st-01.js — driver.sleep() raised from 300 to 1000
+bva-01.js — driver.sleep(500) added inside the click loop between each button
+
+Thesis Insight: This is direct empirical evidence for the sleep anti-pattern argument documented after ST-01. The prediction was that hardcoded sleeps would fail when latency changed — CI proved it correct immediately. Neither Cypress nor Playwright required a single change to pass on CI. The fixes added the following artificial overhead per run: BVA-01 — 3000ms (6 × 500ms), ST-01 — tripled sleep, DT-R1 — doubled timeouts across three waits. This overhead inflates Selenium's benchmark execution times and must be acknowledged when interpreting PERF-01 results — the slower times are not purely WebDriver protocol overhead but also include accumulated timing buffers required for cross-environment reliability.
+Files changed: bva-01.js, dt-r1.js, st-01.js in selenium-station/black-box/
