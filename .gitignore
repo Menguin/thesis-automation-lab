@@ -5,19 +5,21 @@ node_modules/
 test-results/
 playwright-report/
 
-# 3. THESIS DATA (Evidence for benchmarks)
-# I did NOT ignore results/*.json so the raw data remains 
+# 3. Cypress auto-generated
+cypress/screenshots/
+cypress/videos/
+
+# 4. THESIS DATA (Evidence for benchmarks)
+# results/*.json is NOT ignored so raw data remains
 # visible and verifiable on GitHub.
 
-# 4. Security & Environment
+# 5. Security & Environment
 .env
 
-# 5. OS Junk Files
+# 6. OS Junk Files
 .DS_Store
 Thumbs.db
 
-#  6. EG-01 — Error Guessing removed form thesis suite, but kept for future projects
-cypress-station/eg-01.cy.js
-playwright-station/eg-01.spec.js
-selenium-station/eg-01.js
-cypress/screenshots/eg-01.cy.js/EG-01  Error Guessing — Checkout Form Validation -- Whitespace-only input in all fields should not bypass required field validation (failed).png
+# 7. EG-01 — removed from thesis suite, retained locally for future projects
+# Defect found: whitespace bypasses validation on saucedemo
+_sandbox/
