@@ -15,3 +15,11 @@ playwright-report/
 # 5. OS Junk Files
 .DS_Store
 Thumbs.db
+
+#  6. EG-01 — Error Guessing removed form thesis suite, but kept for future projects
+
+cypress-station/cypress/e2e/eg-01.cy.js
+
+playwright-station/eg-01.spec.js
+
+selenium-station/eg-01.js
