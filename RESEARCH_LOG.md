@@ -185,3 +185,11 @@ Change: The .each() loop was replaced with cy.get('.btn_inventory').click({ mult
 Why: The .each() callback passed a jQuery-wrapped element $btn into the loop — inconsistent with the decision to keep all scripts jQuery-free. The { multiple: true } option is a built-in Cypress modifier that clicks all matched elements in a single command with no loop, no callback, and no jQuery.
 How it works: Cypress refuses to click multiple elements by default as a safety measure. { multiple: true } is an explicit instruction telling Cypress the behaviour is intentional — click every matching button on the page. Cypress handles the iteration internally.
 Thesis Insight: { multiple: true } has no equivalent in Playwright or Selenium. Playwright requires a for loop with .nth(i). Selenium requires a for...of loop. One line in Cypress versus an explicit loop in both other frameworks is a direct, measurable difference in Developer Experience for multi-element interactions.
+
+## Milestone: DT-R1 Added — Decision Table Testing
+Date: May 05, 2026
+Test: Checkout form submitted with first name and last name filled, postcode deliberately left empty. Expected outcome: postcode error displayed, user remains on the checkout information page.
+Cypress — zero explicit waits across the entire flow. Two content assertions and one URL assertion. The intentionally empty postcode field is documented in the comments as a decision rather than an action.
+Playwright — one explicit wait after login, all subsequent page transitions handled automatically. URL assertion uses .not.toHaveURL(/.*step-two/) — the .not negation is consistent with Playwright's built-in assertion API.
+Selenium — three explicit driver.wait() calls required: one after login, one after navigating to the cart, one after clicking Checkout. Each page transition needs its own manual wait. Cypress and Playwright handle these automatically.
+Thesis Insight: DT-R1 is the first multi-transition test in the suite. The number of manual waits required across an equivalent flow — zero for Cypress, one for Playwright, three for Selenium — is a direct and measurable indicator of how much async management each framework delegates to the developer. This is a concrete data point for the Async Handling benchmark.
