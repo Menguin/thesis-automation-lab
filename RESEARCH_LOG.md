@@ -205,3 +205,15 @@ Selenium has no equivalent. findElement() throws a fatal crash if the element is
 Why this matters: Hardcoded sleeps are a universally recognised anti-pattern in software engineering. They inflate execution time regardless of actual UI speed, and they cause flakiness when latency spikes push the real update time past the guessed duration.
 
 The sleep was not an implementation choice — it was a structural consequence of Selenium's architecture. This is a reliability difference, not a syntax difference, and directly supports findings in the Async Handling, Developer Experience, and Pipeline Stability dimensions of the comparative analysis.
+
+## Milestone: EG-01 Added — Error Guessing
+Date: May 05, 2026
+Test: Whitespace-only input entered into all three checkout form fields. Expected outcome: validation rejects it, user remains on the checkout information page.
+Why no specific error text assertion — the test checks whether whitespace bypasses validation, not what the error says. Asserting the error is visible and the URL has not changed is sufficient and more robust.
+Selenium sleep increased to 500ms — EG-01 submits a full form rather than clicking a single button. The additional processing time required a longer guess. This remains the sleep anti-pattern, with the duration adjusted by judgment rather than measurement — which is itself a finding. The correct value can only be guessed, not known.
+
+Key observations:
+EG-01 and DT-R1 share the same navigation flow. DT-R1 enters valid data and leaves one field empty. EG-01 enters whitespace in all fields. Same structure, different adversarial intent. The relationship between Decision Table and Error Guessing techniques is visible in the code.
+The sleep duration problem as a measurable finding. 300ms in ST-01, 500ms in EG-01 — both guessed. Cypress and Playwright resolve in the minimum actual time needed. Selenium guesses a fixed duration and hopes it is long enough. The fact that the guess changed between two tests in the same suite illustrates exactly why the sleep anti-pattern degrades reliability.
+Cumulative wait count across the suite: 3 waits + 1 sleep for Selenium.
+Selenium's wait overhead is accumulating with every multi-step test added to the suite. This is a measurable contributor to execution time differences in the benchmark.
