@@ -179,3 +179,9 @@ Selenium (The Raw Approach): Utilizes findElements() alongside a standard JavaSc
 These refactoring decisions highlight a core dimension of the comparative analysis. Cypress heavily abstracts DOM state management and retries, lowering the barrier to entry but obscuring the underlying mechanics. Playwright provides modern, robust querying but expects the developer to explicitly manage state iteration defensively. Selenium provides raw access, leaving both iteration strategy and stale element protection entirely to the engineer's discretion.
 
 --------------------------------------------------
+## Milestone: BVA-01 Cypress Station Rewritten
+Date: May 05, 2026
+Change: The .each() loop was replaced with cy.get('.btn_inventory').click({ multiple: true }).
+Why: The .each() callback passed a jQuery-wrapped element $btn into the loop — inconsistent with the decision to keep all scripts jQuery-free. The { multiple: true } option is a built-in Cypress modifier that clicks all matched elements in a single command with no loop, no callback, and no jQuery.
+How it works: Cypress refuses to click multiple elements by default as a safety measure. { multiple: true } is an explicit instruction telling Cypress the behaviour is intentional — click every matching button on the page. Cypress handles the iteration internally.
+Thesis Insight: { multiple: true } has no equivalent in Playwright or Selenium. Playwright requires a for loop with .nth(i). Selenium requires a for...of loop. One line in Cypress versus an explicit loop in both other frameworks is a direct, measurable difference in Developer Experience for multi-element interactions.
