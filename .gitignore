@@ -6,8 +6,8 @@ test-results/
 playwright-report/
 
 # 3. Cypress auto-generated
-cypress/screenshots/
-cypress/videos/
+cypress/screenshots/eg-01-whitespace-bypass/
+cypress/videos/eg-01-whitespace-bypass/
 
 # 4. THESIS DATA (Evidence for benchmarks)
 # results/*.json is NOT ignored so raw data remains
