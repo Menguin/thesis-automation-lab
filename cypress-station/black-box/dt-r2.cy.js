@@ -1,4 +1,4 @@
-describe('DT-R1 | Decision Table — Checkout Form Submission', () => {
+describe('DT-R2 | Decision Table — Checkout Form Submission', () => {
 
   it('First name and last name provided, postcode missing should display a postcode error', () => {
 

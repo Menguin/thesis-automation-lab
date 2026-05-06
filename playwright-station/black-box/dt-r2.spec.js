@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-test('DT-R1 | Decision Table — First name and last name provided, postcode missing should display a postcode error', async ({ page }) => {
+test('DT-R2 | Decision Table — First name and last name provided, postcode missing should display a postcode error', async ({ page }) => {
 
   // 1. Navigate to the target web application using the Base URL
   await page.goto('/');
