@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 6
     },
     "preserveOutput": "always",
     "projects": [
@@ -20,7 +20,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 6
         },
         "id": "",
         "name": "",
@@ -53,6 +53,258 @@
   },
   "suites": [
     {
+      "title": "playwright-station\\benchmarking\\async-01.spec.js",
+      "file": "playwright-station/benchmarking/async-01.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ASYNC-01 | Async/Wait Behaviour — App should reflect correct product details and cart state across navigation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6120,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-06T12:31:09.417Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7433c06e7982f44f5c60-51c25c38c39ad88173fa",
+          "file": "playwright-station/benchmarking/async-01.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "playwright-station\\benchmarking\\uc-01.spec.js",
+      "file": "playwright-station/benchmarking/uc-01.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "UC-01 | Use Case Testing — Primary flow: user completes a full purchase from login to order confirmation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 6487,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-06T12:31:09.420Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "def0734d93230189252a-e76fdac28eed42e2568d",
+          "file": "playwright-station/benchmarking/uc-01.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "playwright-station\\black-box\\bva-01.spec.js",
+      "file": "playwright-station/black-box/bva-01.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "BVA-01 | Boundary Value Analysis — Max boundary: adding all available products should reflect the correct cart count",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 2,
+                  "status": "passed",
+                  "duration": 6607,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-06T12:31:09.448Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3336a477b1d02519477c-47ce8a184f974f0bc258",
+          "file": "playwright-station/black-box/bva-01.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "playwright-station\\black-box\\dt-r2.spec.js",
+      "file": "playwright-station/black-box/dt-r2.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "DT-R2 | Decision Table — First name and last name provided, postcode missing should display a postcode error",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 3,
+                  "status": "passed",
+                  "duration": 6479,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-06T12:31:09.425Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3b60e897dfe871e0ad6f-0db3e6d0f787d7ff94fb",
+          "file": "playwright-station/black-box/dt-r2.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "playwright-station\\black-box\\ep-01.spec.js",
+      "file": "playwright-station/black-box/ep-01.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "EP-01 | Equivalence Partitioning — Valid sort partition: selecting price low-to-high should display the cheapest product first",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 4,
+                  "status": "passed",
+                  "duration": 5951,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-06T12:31:09.466Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "95943a6be7a69ca08032-16120e130ef26f34f522",
+          "file": "playwright-station/black-box/ep-01.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "playwright-station\\black-box\\st-01.spec.js",
+      "file": "playwright-station/black-box/st-01.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ST-01 | State Transition — Removing the only cart item should return the cart to the empty state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 5,
+                  "status": "passed",
+                  "duration": 6194,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-05-06T12:31:09.435Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "14f1a013c3c87a5fbbb3-a38eeea0334d97f8a6e2",
+          "file": "playwright-station/black-box/st-01.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
       "title": "playwright-station\\login.spec.js",
       "file": "playwright-station/login.spec.js",
       "column": 0,
@@ -71,15 +323,15 @@
               "projectName": "",
               "results": [
                 {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
+                  "workerIndex": 4,
+                  "parallelIndex": 4,
                   "status": "passed",
-                  "duration": 3788,
+                  "duration": 1073,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-16T19:09:49.153Z",
+                  "startTime": "2026-05-06T12:31:16.871Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -97,9 +349,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-03-16T19:09:47.748Z",
-    "duration": 6292.651,
-    "expected": 1,
+    "startTime": "2026-05-06T12:31:06.318Z",
+    "duration": 11736.345999999998,
+    "expected": 7,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

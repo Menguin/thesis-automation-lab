@@ -1,6 +1,7 @@
 const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
+  projectId: 'q92r8m',
   e2e: {
     // 1. The Base URL: The default website for all tests
     baseUrl: 'https://www.saucedemo.com',
