@@ -3,14 +3,13 @@ const chrome = require('selenium-webdriver/chrome');
 
 async function st01StateTransitionCartEmptyState() {
 
-  // Start the timer
   const startTime = Date.now();
 
-  // Configure Chrome to run headless (required for CI environments with no display)
   let options = new chrome.Options();
   options.addArguments('--headless=new');
   options.addArguments('--no-sandbox');
   options.addArguments('--disable-dev-shm-usage');
+  options.addArguments('--window-size=1920,1080');
 
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
@@ -35,7 +34,7 @@ async function st01StateTransitionCartEmptyState() {
     // 6. Wait for the inventory list to confirm successful login
     await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
 
-    // 7. Add the first available product to the cart — transition to S2: Cart has items
+    // 7. Add the first available product to the cart — transition to S2
     const addButtons = await driver.findElements(By.css('.btn_inventory'));
     await addButtons[0].click();
 
@@ -52,35 +51,36 @@ async function st01StateTransitionCartEmptyState() {
       throw new Error('Assertion failed — cart badge did not show 1 after adding item');
     }
 
-    // 9. Remove the same product from the cart — transition to S1: Cart is empty
-    const removeButtons = await driver.findElements(By.css('.btn_inventory'));
-    await removeButtons[0].click();
+    // 9. Remove the product using its specific data-test selector with JS injection
+    // Retry loop — keeps clicking until the badge disappears
+    let badgeGone = false;
+    let attempts = 0;
+    while (!badgeGone && attempts < 10) {
+      const removeBtns = await driver.findElements(
+        By.css('[data-test="remove-sauce-labs-backpack"]')
+      );
+      if (removeBtns.length > 0) {
+        await driver.executeScript('arguments[0].click();', removeBtns[0]);
+      }
+      await driver.sleep(500);
+      const badges = await driver.findElements(By.css('.shopping_cart_badge'));
+      if (badges.length === 0) badgeGone = true;
+      attempts++;
+    }
 
-    // 10. Retry loop — wait for badge to disappear
-let badgeGone = false;
-let attempts = 0;
-while (!badgeGone && attempts < 30) {
-  await driver.sleep(300);
-  const badges = await driver.findElements(By.css('.shopping_cart_badge'));
-  if (badges.length === 0) badgeGone = true;
-  attempts++;
-}
-if (badgeGone) {
-  console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');
-} else {
-  throw new Error('Assertion failed — cart badge did not disappear after item removal');
-}
+    // 10. Assertion: Verify the cart is in the empty state
+    if (badgeGone) {
+      console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');
+    } else {
+      throw new Error('Assertion failed — cart badge did not disappear after item removal');
+    }
 
-    // 11. Assertion: Confirm the cart is now in the empty state
-    console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');
-
-    // 12. Stop the timer and log execution time
+    // 11. Stop the timer and log execution time
     const endTime = Date.now();
     const duration = (endTime - startTime) / 1000;
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
-    // 13. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 

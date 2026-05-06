@@ -9,13 +9,12 @@ async function dtR2DecisionTableCheckoutFormPostcodeMissing() {
   options.addArguments('--headless=new');
   options.addArguments('--no-sandbox');
   options.addArguments('--disable-dev-shm-usage');
-  // Disable Chrome autofill — without this Chrome fills in the postal code
-  // field automatically, causing the form to submit successfully and
-  // preventing the validation error from appearing
+  options.addArguments('--window-size=1920,1080');
+  options.addArguments('--incognito');
   options.addArguments('--disable-background-networking');
   options.addArguments('--disable-sync');
   options.addArguments('--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses');
-  options.addArguments('--window-size=1920,1080');
+
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
     .forBrowser('chrome')
@@ -43,15 +42,27 @@ async function dtR2DecisionTableCheckoutFormPostcodeMissing() {
     const addButtons = await driver.findElements(By.css('.btn_inventory'));
     await addButtons[0].click();
 
-    // 8. Navigate to the shopping cart
-    await driver.findElement(By.css('.shopping_cart_link')).click();
+    // 8. Navigate to cart with retry — retries until URL confirms navigation
+    let onCartPage = false;
+    let cartAttempts = 0;
+    while (!onCartPage && cartAttempts < 10) {
+      const cartLink = await driver.wait(
+        until.elementLocated(By.css('.shopping_cart_link')), 5000
+      );
+      await driver.executeScript('arguments[0].click();', cartLink);
+      await driver.sleep(500);
+      const currentUrl = await driver.getCurrentUrl();
+      if (currentUrl.includes('cart.html')) onCartPage = true;
+      cartAttempts++;
+    }
+    if (!onCartPage) throw new Error('Failed to navigate to cart page after 10 retries');
 
-    // 9. Wait for the checkout button to be located and visible before clicking
+    // 9. Wait for checkout button and click using JavaScript injection
     const checkoutBtn = await driver.wait(
       until.elementLocated(By.css('[data-test="checkout"]')), 20000
     );
     await driver.wait(until.elementIsVisible(checkoutBtn), 10000);
-    await checkoutBtn.click();
+    await driver.executeScript('arguments[0].click();', checkoutBtn);
 
     // 10. Wait for the checkout form to load
     await driver.wait(
@@ -64,18 +75,16 @@ async function dtR2DecisionTableCheckoutFormPostcodeMissing() {
     // 12. Locate the Last Name field and fill it with a valid value
     await driver.findElement(By.css('[data-test="lastName"]')).sendKeys('Smith');
 
-    // 13. Explicitly clear the Postcode field in case Chrome autofilled it
-    // Chrome's autofill can populate this field automatically — clearing it
-    // ensures the field is genuinely empty for the test condition
+    // 13. Explicitly clear the Postcode field — ensures no autofill content remains
     const postalCodeField = await driver.findElement(By.css('[data-test="postalCode"]'));
     await postalCodeField.clear();
 
-    // 14. Wait for the Continue button to be visible then click it
+    // 14. Wait for Continue button to be visible then click it
     const continueBtn = await driver.wait(
       until.elementLocated(By.css('[data-test="continue"]')), 10000
     );
     await driver.wait(until.elementIsVisible(continueBtn), 5000);
-    await continueBtn.click();
+    await driver.executeScript('arguments[0].click();', continueBtn);
 
     // 15. Wait for the error message to appear
     await driver.wait(
@@ -116,7 +125,6 @@ async function dtR2DecisionTableCheckoutFormPostcodeMissing() {
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
-    // 21. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 

@@ -37,8 +37,9 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
     // 6. Wait for the inventory list to confirm successful login
     await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
 
-    // 7. Click each Add to Cart button and confirm each click registered
-    // before moving to the next — synchronises with React state updates
+    // 7. Click each Add to Cart button with a built-in retry engine
+    // If a click is dropped by the browser, the loop retries until
+    // the badge confirms the click was registered
     const addToCartSelectors = [
       '[data-test="add-to-cart-sauce-labs-backpack"]',
       '[data-test="add-to-cart-sauce-labs-bike-light"]',
@@ -49,18 +50,17 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
     ];
 
     for (let i = 0; i < addToCartSelectors.length; i++) {
-      const button = await driver.wait(
-        until.elementLocated(By.css(addToCartSelectors[i])), 5000
-      );
-      await driver.wait(until.elementIsVisible(button), 5000);
-      await button.click();
-
-      // Retry loop — wait for badge to confirm this click registered
       const expectedCount = String(i + 1);
       let confirmed = false;
       let attempts = 0;
-      while (!confirmed && attempts < 20) {
+
+      while (!confirmed && attempts < 10) {
+        const button = await driver.wait(
+          until.elementLocated(By.css(addToCartSelectors[i])), 5000
+        );
+        await driver.executeScript('arguments[0].click();', button);
         await driver.sleep(500);
+
         const badges = await driver.findElements(By.css('.shopping_cart_badge'));
         if (badges.length > 0) {
           const text = await badges[0].getText();
@@ -68,12 +68,13 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
         }
         attempts++;
       }
+
       if (!confirmed) {
-        throw new Error(`Click ${i + 1} not registered — badge did not reach ${expectedCount}`);
+        throw new Error(`Click ${i + 1} not registered after 10 retries`);
       }
     }
 
-    // 8. All six clicks confirmed — assert final count
+    // 8. All six clicks confirmed
     console.log('✅ TEST PASSED: Cart badge correctly displays the maximum count of 6');
 
     // 9. Stop the timer and log execution time
@@ -82,7 +83,6 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
-    // 10. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 
