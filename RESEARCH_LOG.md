@@ -294,3 +294,142 @@ bva-01.js — The entire click loop was rewritten with a per-click retry engine 
 dt-r2.js — Three additions: --window-size=1920,1080 to fix the mobile layout on CI, --incognito to fully prevent Chrome autofill from accessing saved addresses, and a cart navigation retry loop that checks the URL changed to cart.html before proceeding. JavaScript injection used for checkout and continue button clicks.
 st-01.js — --window-size=1920,1080 added. The remove button is now targeted by its specific data-test="remove-sauce-labs-backpack" selector rather than a generic class selector. JavaScript injection and retry loop replace the standard click and async wait pattern.
 Thesis insight: The complete list of infrastructure built manually in Selenium to achieve what Cypress and Playwright provide out of the box now stands as follows — manual browser teardown, explicit page transition waits, Chrome background service flags, autofill suppression, incognito mode, window size configuration per file, React synchronisation loops, Node version standardisation, custom suite runner, JavaScript click injection, and per-click action retryability loops. Every item on this list is zero lines of code in Cypress and Playwright.
+
+## Milestone: Benchmarking Suite Implemented — All Four Tests Verified Across All Three Stations
+Date: May 06, 2026
+Status: All benchmarking tests passing on CI after per-station fixes applied.
+
+Overview
+A dedicated benchmarking folder was created inside each station to house four tests designed specifically for comparative performance and behaviour measurement. These tests are separate from the black-box technique tests — they exist not to demonstrate ISTQB technique literacy but to generate the quantitative data that supports the thesis argument.
+The four benchmarking tests are:
+UC-01 — Use Case Testing (Complete Purchase Journey)
+The only test in the entire suite that reaches the order confirmation page. Covers login → add item → cart → checkout form → order summary → finish → confirmation. Validates that the full happy path functions correctly on all three frameworks and provides an end-to-end execution time baseline.
+ASYNC-01 — Async/Wait Behaviour (Product Detail Navigation)
+The only test that navigates away from the inventory page into a product detail page and back. Triggers three separate DOM state transitions — inventory, detail page, inventory again — while verifying that the product name is consistent, the cart updates correctly, and the cart state persists after navigation. This is the primary test for stressing how each framework handles async DOM transitions, and it is the test that will be run 30 times to produce flakiness data.
+PERF-01 — Execution Speed (Login to Inventory Load Time)
+Measures the time from the login button click to the inventory list becoming visible. This is the core execution speed benchmark. Each framework measures this differently at the implementation level, but all three produce a comparable millisecond duration that can be averaged across 30 runs for the final benchmark table.
+PERF-02 — Network Observability (Navigation Timing API)
+Measures the network response time for the initial application load using the browser's built-in Navigation Timing API. This test exposed a significant architectural characteristic of the application under test — see incident log below.
+
+Incident: SPA Routing — PERF-01 and PERF-02 Playwright, PERF-02 Cypress
+What failed:
+Both PERF-01 and PERF-02 in Playwright used page.waitForResponse(r => r.url().includes('inventory')) to capture the inventory page response. PERF-02 in Cypress used cy.intercept('GET', '**/inventory.html') to intercept the same request. All three timed out waiting for a request that never arrived.
+Why it failed:
+saucedemo is a Single Page Application built with React. After the initial HTML, CSS, and JavaScript bundle loads, all navigation is handled entirely by React's client-side router. When the login button is clicked, the URL changes to /inventory.html using the browser's History API — but no real HTTP GET request is made to the server. The routing happens in JavaScript within the already-loaded application. There is nothing on the network to intercept.
+page.waitForResponse and cy.intercept are designed to observe real network traffic. They are correct tools — the application simply does not produce the network event they were waiting for.
+The fix:
+All three stations were updated to use the browser's Navigation Timing API, which measures the real HTTP response for the initial application load — the only genuine network request saucedemo makes. This is accessed differently per framework but produces consistent, comparable data:
+Cypress:
+javascriptcy.window().then((win) => {
+  const navTiming = win.performance.getEntriesByType('navigation')[0];
+  const responseTime = navTiming.responseEnd - navTiming.requestStart;
+});
+Playwright:
+javascriptconst responseTime = await page.evaluate(() => {
+  const nav = performance.getEntriesByType('navigation')[0];
+  return nav.responseEnd - nav.requestStart;
+});
+Selenium:
+javascriptconst responseTime = await driver.executeScript(
+  'return window.performance.getEntriesByType("navigation")[0].responseEnd - window.performance.getEntriesByType("navigation")[0].requestStart'
+);
+PERF-01 in Playwright was also rewritten — the waitForResponse pattern was replaced with a simple Date.now() timer around the login button click and inventory list visibility check, consistent with how the Selenium version measures execution speed.
+Thesis insight:
+This incident confirms that the PERF-02 benchmark measures initial application load performance across all three frameworks rather than inventory page navigation performance. This is a consistent limitation driven by the application's architecture, not by any framework limitation. The data produced is still valid and comparable because all three frameworks are measuring the same underlying event using the same browser API. This should be acknowledged in the methodology section — the application under test is a SPA, and the network benchmark reflects initial load rather than navigational response.
+A secondary insight is that Playwright's CDP-based waitForResponse and Cypress's cy.intercept both failed on the same application for the same reason — demonstrating that even the most architecturally advanced network observation tools cannot capture what the network does not produce. The fix required dropping down to the browser's own Performance API, which is framework-agnostic.
+
+Per-Station Code Fixes Applied
+Cypress — one fix required:
+PERF-02 rewrote from cy.intercept to cy.window() + Navigation Timing API. All other benchmarking tests passed without changes.
+Playwright — two fixes required:
+PERF-01 rewrote from page.waitForResponse to Date.now() timer. PERF-02 rewrote from page.waitForResponse to page.evaluate() + Navigation Timing API. All other benchmarking tests passed without changes.
+Selenium — two files required full rewrite:
+UC-01 and ASYNC-01 required the complete standard Selenium hardening pattern applied throughout the black-box suite — --window-size=1920,1080, --disable-background-networking, --disable-sync, --disable-features=AutofillServerCommunication, --incognito for UC-01, JavaScript click injection for all navigation actions, retry loops for cart navigation, and increased timeouts for all driver.wait() calls. PERF-01 and PERF-02 passed without changes as they use Date.now() and driver.executeScript() respectively — neither relies on network interception or complex page navigation.
+
+## Thesis Insights, Revelations and Important Findings
+thesis-automation-lab — Complete Finding Set
+Date compiled: May 06, 2026
+
+Finding 1: Architecture Is the Root of Every Difference
+Every difference observed between the three frameworks traces back to one architectural decision — how each tool communicates with the browser.
+Cypress runs inside the browser itself using a proxy layer. It shares the same execution context as the application under test. This is why its commands queue automatically, why waits are implicit, and why Chrome's background services do not interfere with its tests.
+Playwright communicates with Chrome via CDP — the Chrome DevTools Protocol — a low-level debugging channel. It creates a fully isolated, controlled browser environment. This is why it can access network timing natively, why it has built-in actionability checks, and why background services are suppressed by default.
+Selenium launches Chrome as a regular user-facing browser and drives it from the outside using the WebDriver protocol. Chrome does not know it is being tested. It behaves exactly as it would for a real user — running every background service, enabling autofill, rendering at its default viewport size. Every environmental difference that caused test failures in this lab originates from this single fact.
+
+Finding 2: The Native Test Runner Gap
+Cypress and Playwright ship with complete test runner infrastructure — file discovery, parallel execution, error isolation, structured reporting, and CI-compatible exit codes. Everything needed to run a test suite is included.
+Selenium is a browser automation library. It provides none of this. To achieve equivalent suite-level behaviour, a custom runner.js had to be built — approximately 30 lines of infrastructure code whose sole purpose is to compensate for the absence of a built-in runner. This was documented, committed, and referenced throughout the research log as a recurring example of the Developer Experience cost.
+
+Finding 3: The Sleep Anti-Pattern Is a Structural Consequence, Not a Developer Choice
+The observation was made early that hardcoded driver.sleep() calls are an anti-pattern. What the CI failures proved is that they are not an anti-pattern that a careful Selenium developer can avoid — they are a structural consequence of Selenium's architecture.
+When Cypress and Playwright assert something, they poll until the condition is true or the timeout expires. When Selenium checks something, it checks once at that exact millisecond. If the page is not ready, the check fails. The only ways to handle this in Selenium are to sleep and hope the page catches up, or to write a custom polling loop. Both were implemented in this lab. Neither is as reliable as the native polling that Cypress and Playwright provide on every assertion automatically.
+The CI failures documented the prediction exactly — a sleep that passed locally on a fast Windows machine failed on a slower Linux CI runner. The correct duration was never knowable without measurement.
+
+Finding 4: Negative Assertions Expose Different Levels of Automation Maturity
+ST-01 was the first test to assert that something was no longer on the page. This produced three structurally different implementations:
+Cypress uses .should('not.exist') — one assertion, automatic polling, built-in.
+Playwright uses .not.toBeVisible() — one assertion, automatic polling, built-in.
+Selenium has no equivalent. findElement() throws a fatal exception if the element is missing. The workaround is findElements() which returns an empty array, enabling a safe length check. But findElements() evaluates the page instantaneously without polling — requiring a sleep before checking. This is the negative assertion problem: the frameworks that matter most for state transition testing are the ones that can assert absence reliably. Selenium cannot, natively.
+
+Finding 5: Chrome Runs Unmodified — And That Causes Real Test Failures
+The dt-r2 test intentionally left the postal code field empty to trigger a validation error. The error never appeared. Chrome's built-in machine learning autofill model — TensorFlow Lite — recognised the checkout form pattern and filled in the postal code automatically. The form submitted successfully. The test failed not because of a code error or a timing issue, but because the browser was doing something the developer did not ask for and did not know about.
+The fix required three Chrome command-line flags to suppress background services plus an explicit .clear() on the postal code field as a backup. Cypress and Playwright required zero equivalent configuration because they do not give Chrome the opportunity to behave as a regular user browser.
+
+Finding 6: Headless Viewport Is Not Configured Automatically
+When headless Chrome launches without an explicit window size, it renders at a small default viewport. On saucedemo at that size, the mobile layout activates — the navigation bar repositions and buttons move. Selenium tried to click buttons at their desktop positions, found nothing, and timed out.
+The fix was --window-size=1920,1080, added to every Selenium test file individually — because each test launches its own Chrome instance, and each one must be configured independently.
+Cypress manages its viewport through its own execution environment. Playwright defaults to a desktop-sized viewport. Both make this problem invisible to the developer.
+
+Finding 7: React Event Batching Drops Selenium Clicks Silently
+When Selenium clicked six Add to Cart buttons in rapid succession, React batched the state updates and dropped most of the click events. Only one click registered. The cart badge showed 1 instead of 6.
+Selenium fires click events at JavaScript execution speed — as fast as the CPU allows — with no awareness of whether the application has finished processing the previous event. React's virtual DOM batches updates for performance. The two mechanisms are incompatible at high speed.
+Cypress handles this with { multiple: true } — a single atomic operation. Playwright re-queries each element on every loop iteration and waits for the element to be actionable before clicking. Both approaches are aware of the application's readiness state. Selenium is not.
+The fix required a per-click confirmation loop — after each click, a retry loop checks the badge count incremented before proceeding to the next. This manually implements what Cypress and Playwright provide natively.
+
+Finding 8: Action Retryability Is the Most Fundamental Difference
+Even with explicit waits, viewport configuration, React synchronisation loops, and JavaScript click injection, Selenium continued dropping individual click events on CI. The diagnosis was action retryability.
+Playwright and Cypress monitor application state after each interaction. If a click does not produce the expected outcome, they retry automatically within their timeout window. The developer never knows this happened.
+Selenium fires the WebDriver click event exactly once. If the browser is occupied at that microsecond, the event disappears. There is no retry mechanism at the framework level. Building one requires wrapping every critical click in a while loop that re-clicks until the expected DOM change is confirmed. This was implemented for three tests. In a larger suite it would be implemented dozens of times.
+
+Finding 9: JavaScript Click Injection Is Required for Reliability
+The standard button.click() in Selenium routes through the WebDriver event system, which can be swallowed under CI load. Replacing it with driver.executeScript('arguments[0].click()', button) fires the click event directly on the DOM element, bypassing the WebDriver routing layer.
+This is a known workaround in professional Selenium usage. It is not documented as a recommended pattern — it is a compensatory technique. Its necessity in this lab is itself a data point: to achieve the same reliability as a standard .click() call in Cypress or Playwright, Selenium requires a mode of interaction that bypasses its own primary API.
+
+Finding 10: Node Version Affects Framework Behaviour
+The driver.wait(async () => {...}) pattern — used for custom polling conditions — behaved differently on Node 24 (local machine) versus Node 20 (CI server). On Node 20, the async condition function did not resolve correctly and the wait always timed out. The pattern was replaced with explicit while loops that produce identical behaviour on both Node versions.
+Cypress and Playwright abstract their internal async mechanisms entirely from the developer. The Node version does not affect how their assertions behave. Selenium's low-level architecture exposes runtime differences at the JavaScript engine level, adding version management to the list of environmental concerns the developer must handle.
+
+Finding 11: SPA Routing Makes Network Interception Invalid for Navigation Events
+PERF-02 was originally designed to measure inventory page network response time using page.waitForResponse (Playwright) and cy.intercept (Cypress). Both timed out waiting for a request that never arrived.
+saucedemo is a Single Page Application. After the initial load, all navigation is client-side. The URL changes to /inventory.html via React Router without making an HTTP request. There is nothing on the network to intercept.
+This is a finding about the application architecture rather than a framework limitation — but it demonstrates that Playwright's CDP access and Cypress's network proxy only provide value when real network traffic exists. On modern SPAs, significant application transitions produce no network events at all.
+All three frameworks were updated to use the browser's Navigation Timing API — measuring initial application load response time rather than navigation response time. This produces consistent, comparable data and is acknowledged in the methodology as a characteristic of the application under test.
+
+Finding 12: The Cumulative Overhead List
+Everything added to the Selenium station to achieve the same test outcomes as Cypress and Playwright, none of which required any equivalent work in the other two stations:
+
+Manual browser launch and teardown per file
+Explicit waits for every page transition
+Hardcoded sleep values for timing management
+Chrome background service suppression flags
+Chrome autofill suppression flags
+Explicit field clearing to prevent autofill interference
+Window size configuration per file
+Per-click React synchronisation loops
+JavaScript click injection for reliable event dispatch
+Per-click action retryability loops
+Custom test runner for suite-level execution
+Node version standardisation
+Incognito mode for profile isolation
+
+Every item on this list is zero lines of code in Cypress and Playwright.
+
+Finding 13: CI Execution Time Reflects Infrastructure Cost, Not Just Speed
+Selenium's benchmark execution times are inflated by the accumulated timing buffers required for reliability — sleeps between clicks, waits between page transitions, retry loop polling intervals. These are not measures of how fast Selenium processes the application. They are measures of how much artificial delay is needed to make Selenium behave reliably.
+When interpreting PERF-01 and PERF-02 benchmark data, Selenium's slower times must be understood in this context. The timing overhead is partially attributable to WebDriver protocol latency and partially attributable to manually inserted delays. Cypress and Playwright times reflect actual framework-application interaction speed with no artificial padding.
+
+Finding 14: The Frameworks Differ in Scope, Not Just Syntax
+The most important overall finding is that comparing Selenium, Playwright, and Cypress as equivalent tools in different syntaxes is a category error. They are tools of different scope.
+Cypress and Playwright are testing frameworks. They ship with a test runner, assertion library, network interception, automatic waiting, browser lifecycle management, structured reporting, and CI integration. The developer writes test logic.
+Selenium is a browser automation library. It provides a protocol for sending instructions to a browser. Everything else — the runner, the assertions, the waits, the retries, the reporting, the CI configuration — is the developer's responsibility.
+The choice between them is not a preference question. It is an architectural question about how much infrastructure the team is willing to build and maintain. This lab has produced a concrete, reproducible, and documented answer to what that infrastructure costs.
