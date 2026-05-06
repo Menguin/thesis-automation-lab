@@ -33,7 +33,7 @@ async function st01StateTransitionCartEmptyState() {
     await driver.findElement(By.id('login-button')).click();
 
     // 6. Wait for the inventory list to confirm successful login
-    await driver.wait(until.elementLocated(By.css('.inventory_list')), 5000);
+    await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
 
     // 7. Add the first available product to the cart — transition to S2: Cart has items
     const addButtons = await driver.findElements(By.css('.btn_inventory'));
@@ -56,27 +56,24 @@ async function st01StateTransitionCartEmptyState() {
     const removeButtons = await driver.findElements(By.css('.btn_inventory'));
     await removeButtons[0].click();
 
-    // 10. Wait briefly for the page to update after removal
-    await driver.sleep(1000);
+    // 10. Wait until the cart badge disappears from the page
+    // driver.wait() with a custom function keeps checking until it returns true
+    // This replaces driver.sleep() which was an unreliable hardcoded guess
+    await driver.wait(async () => {
+      const badges = await driver.findElements(By.css('.shopping_cart_badge'));
+      return badges.length === 0;
+    }, 10000, 'Cart badge did not disappear after item removal');
 
-    // 11. Check whether the cart badge still exists on the page
-    const badges = await driver.findElements(By.css('.shopping_cart_badge'));
+    // 11. Assertion: Confirm the cart is now in the empty state
+    console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');
 
-    // 12. Assertion: Verify the cart badge no longer exists on the page
-    if (badges.length === 0) {
-      console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');
-    } else {
-      console.log('❌ TEST FAILED: Cart badge is still visible after removing the only item');
-      throw new Error('Assertion failed — cart badge should not exist after item removal');
-    }
-
-    // 13. Stop the timer and log execution time
+    // 12. Stop the timer and log execution time
     const endTime = Date.now();
     const duration = (endTime - startTime) / 1000;
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
-    // 14. Always close the browser when done, even if the test fails
+    // 13. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 

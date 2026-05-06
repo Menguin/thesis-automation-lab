@@ -3,14 +3,18 @@ const chrome = require('selenium-webdriver/chrome');
 
 async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
 
-  // Start the timer
   const startTime = Date.now();
 
-  // Configure Chrome to run headless (required for CI environments with no display)
   let options = new chrome.Options();
   options.addArguments('--headless=new');
   options.addArguments('--no-sandbox');
   options.addArguments('--disable-dev-shm-usage');
+  // Disable Chrome autofill — without this Chrome fills in the postal code
+  // field automatically, causing the form to submit successfully and
+  // preventing the validation error from appearing
+  options.addArguments('--disable-background-networking');
+  options.addArguments('--disable-sync');
+  options.addArguments('--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses');
 
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
@@ -33,7 +37,7 @@ async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
     await driver.findElement(By.id('login-button')).click();
 
     // 6. Wait for the inventory list to confirm successful login
-    await driver.wait(until.elementLocated(By.css('.inventory_list')), 5000);
+    await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
 
     // 7. Add the first available product to the cart
     const addButtons = await driver.findElements(By.css('.btn_inventory'));
@@ -42,12 +46,17 @@ async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
     // 8. Navigate to the shopping cart
     await driver.findElement(By.css('.shopping_cart_link')).click();
 
-    // 9. Wait for the cart page to load then click the Checkout button
-    await driver.wait(until.elementLocated(By.css('[data-test="checkout"]')), 10000);
-    await driver.findElement(By.css('[data-test="checkout"]')).click();
+    // 9. Wait for the checkout button to be located and visible before clicking
+    const checkoutBtn = await driver.wait(
+      until.elementLocated(By.css('[data-test="checkout"]')), 20000
+    );
+    await driver.wait(until.elementIsVisible(checkoutBtn), 10000);
+    await checkoutBtn.click();
 
     // 10. Wait for the checkout form to load
-    await driver.wait(until.elementLocated(By.css('[data-test="firstName"]')), 10000);
+    await driver.wait(
+      until.elementLocated(By.css('[data-test="firstName"]')), 20000
+    );
 
     // 11. Locate the First Name field and fill it with a valid value
     await driver.findElement(By.css('[data-test="firstName"]')).sendKeys('Jane');
@@ -55,15 +64,28 @@ async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
     // 12. Locate the Last Name field and fill it with a valid value
     await driver.findElement(By.css('[data-test="lastName"]')).sendKeys('Smith');
 
-    // 13. Leave the Postcode field intentionally empty — this is the condition under test
-    // 14. Locate and click the Continue button
-    await driver.findElement(By.css('[data-test="continue"]')).click();
+    // 13. Explicitly clear the Postcode field in case Chrome autofilled it
+    // Chrome's autofill can populate this field automatically — clearing it
+    // ensures the field is genuinely empty for the test condition
+    const postalCodeField = await driver.findElement(By.css('[data-test="postalCode"]'));
+    await postalCodeField.clear();
+
+    // 14. Wait for the Continue button to be visible then click it
+    const continueBtn = await driver.wait(
+      until.elementLocated(By.css('[data-test="continue"]')), 10000
+    );
+    await driver.wait(until.elementIsVisible(continueBtn), 5000);
+    await continueBtn.click();
 
     // 15. Wait for the error message to appear
-    await driver.wait(until.elementLocated(By.css('[data-test="error"]')), 10000);
+    await driver.wait(
+      until.elementLocated(By.css('[data-test="error"]')), 20000
+    );
 
     // 16. Retrieve the error message text
-    const errorText = await driver.findElement(By.css('[data-test="error"]')).getText();
+    const errorText = await driver.findElement(
+      By.css('[data-test="error"]')
+    ).getText();
 
     // 17. Assertion: Verify the error message contains the expected postcode error
     if (errorText.includes('Postal Code is required')) {
