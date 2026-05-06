@@ -235,3 +235,53 @@ bva-01.js — driver.sleep(500) added inside the click loop between each button
 
 Thesis Insight: This is direct empirical evidence for the sleep anti-pattern argument documented after ST-01. The prediction was that hardcoded sleeps would fail when latency changed — CI proved it correct immediately. Neither Cypress nor Playwright required a single change to pass on CI. The fixes added the following artificial overhead per run: BVA-01 — 3000ms (6 × 500ms), ST-01 — tripled sleep, DT-R1 — doubled timeouts across three waits. This overhead inflates Selenium's benchmark execution times and must be acknowledged when interpreting PERF-01 results — the slower times are not purely WebDriver protocol overhead but also include accumulated timing buffers required for cross-environment reliability.
 Files changed: bva-01.js, dt-r1.js, st-01.js in selenium-station/black-box/
+
+## Incident Log: Chrome Autofill Interference — DT-R1 Selenium Station
+Date: May 06, 2026
+DT-R1 intentionally leaves the postal code field empty to trigger a validation error. Instead, the test kept failing because the error never appeared — the application was advancing to step two as if the form was complete.
+The cause was Chrome itself. When Selenium launches Chrome, Chrome does not know it is being tested. It runs exactly like a normal browser — including background services the developer never asked for. Two caused problems:
+Google Cloud Messaging (GCM) — Chrome's push notification system. It tried to register the headless browser as a device, failed repeatedly, and printed PHONE_REGISTRATION_ERROR messages. Noise, but it consumed resources.
+TensorFlow Lite — Chrome's built-in machine learning model for smart autofill. It recognised the checkout form pattern and automatically filled in the postal code field using data saved on the machine. The test had left it empty on purpose. Chrome filled it silently. The form looked complete, it submitted successfully, and the error never appeared.
+
+Why only Selenium was affected
+Cypress runs inside the browser through its own proxy — Chrome's background services do not reach it. Playwright creates a clean isolated browser session where autofill and background services are off by default. Selenium launches Chrome as a regular user-facing browser and drives it from the outside — Chrome behaves exactly as it would for a real user, including running every background service it normally would.
+
+The fix
+Three Chrome flags were added to stop the interference:
+
+--disable-background-networking — stops GCM push notification requests
+--disable-sync — stops Chrome from syncing saved addresses from a Google account
+--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses — disables the autofill feature that filled the postal code
+
+Plus an explicit .clear() on the postal code field as a backup — even if Chrome autofills before the test reaches that line, the field is cleared before Continue is clicked.
+
+DT-R1 problem — Chrome autofill filled the postal code field automatically. Fix: three Chrome flags and an explicit .clear() on the postal code field.
+BVA-01 follow-on failure — The Chrome flags were only added to dt-r1.js, not bva-01.js. The GCM background errors were still firing during BVA-01 and consuming browser resources at the exact moment button clicks were being processed. Only the first click registered. Fix: same three Chrome flags added to bva-01.js, plus the button selector strategy changed from class indexing to unique data-test attributes to eliminate stale element references entirely.
+
+Thesis insight
+These additions are not test logic. They are environment management — three flags and one extra line written purely to stop the browser from interfering with the test. Cypress and Playwright required zero equivalent configuration. A developer encountering this for the first time would not know these flags exist and would spend significant time debugging what looks like a test failure but is actually a browser environment problem. This is relevant to Developer Experience, Operational Overhead, and Test Reliability dimensions of the comparative analysis.
+## Incident Log: Headless Viewport Rendering — BVA-01
+Date: May 06, 2026
+The problem: Only the first Add to Cart button click registered regardless of selector strategy or sleep duration. Badge consistently showed 1.
+Root cause: Headless Chrome renders at a small default viewport when no window size is specified. At that size, saucedemo's sticky navigation bar overlaps the product buttons. Selenium located each button correctly but the click landed on the navigation bar on top of it. The first button is close enough to the top of the page to register. The remaining five are obscured. Clicks were silently intercepted.
+The fix: --window-size=1920,1080 forces Chrome to render at full desktop resolution. At 1920×1080 the layout is correct and all six buttons are fully accessible. With the viewport fixed, the sleep between clicks was also removed entirely — elementIsVisible confirms each button is unobstructed before clicking, and the polling wait confirms all six registered.
+Why only Selenium: Cypress controls the viewport through its own execution environment. Playwright defaults to 1280×720 — large enough to avoid overlap. Selenium launches Chrome externally with no default viewport configuration. The developer sets it manually or discovers the problem the hard way.
+Thesis insight: This is the third category of environment management failure unique to Selenium in this suite — after timing failures and Chrome autofill interference. The pattern is now consistent across three incidents: Selenium exposes the full browser environment to the developer and managing it is a measurable, ongoing cost. Cypress and Playwright handled all three automatically.
+File changed: selenium-station/black-box/bva-01.js
+Date: May 06, 2026 (Part 2)
+Subject: Viewport Limitations and Actionability Engines: The Sticky Header Interception
+
+Observation:
+During the execution of the Boundary Value Analysis (BVA-01) scenario in the CI/CD pipeline, the Selenium script successfully iterated through all 6 "Add to Cart" buttons without throwing an error, yet the final cart assertion failed because the badge only registered 1 item. The root cause was identified as a physical viewport limitation combined with the presence of a sticky navigation header.
+
+Technical Analysis:
+When running in headless mode, Chrome defaults to a constrained viewport (e.g., 800x600). As Selenium scrolled down the page to interact with the remaining 5 buttons, it aligned them at the absolute top edge of the browser window.
+
+The Interception: Because the application features a sticky header ("Swag Labs" banner) with a higher CSS z-index, the buttons were positioned underneath the header.
+
+Lack of Actionability Checks (Selenium): Selenium lacks an internal "Actionability Engine." It executed the click at the calculated X/Y coordinates blindly, clicking the sticky header instead of the button. Because the click event successfully fired somewhere on the DOM, no exception was thrown, leading to a silent failure.
+
+Intelligent Abstraction (Cypress & Playwright): Cypress and Playwright did not suffer from this issue because both feature native Actionability Engines. Before executing a click, these frameworks calculate element occlusion (verifying no other element is covering the target). If covered, they intelligently adjust the scroll position (e.g., to the center of the screen) before interacting.
+
+Thesis Implication:
+This exposes another significant layer of Operational Overhead associated with raw WebDriver implementations. Selenium requires the engineer to manually manage physical rendering constraints and viewport dimensions (e.g., injecting --window-size=1920,1080 into the Chrome options) to prevent silent interaction failures. Modern tools completely abstract this UI layout complexity, guaranteeing that if a click is commanded, it hits the intended target.
