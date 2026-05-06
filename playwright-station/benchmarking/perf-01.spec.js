@@ -11,22 +11,20 @@ test('PERF-01 | Performance — Inventory page should load within the defined pe
   // 3. Locate the password input field and fill it
   await page.locator('#password').fill('secret_sauce');
 
-  // 4. Click login and capture the inventory page response simultaneously
-  // Playwright accesses response timing natively via CDP
-  const [response] = await Promise.all([
-    page.waitForResponse(r => r.url().includes('inventory')),
-    page.locator('#login-button').click()
-  ]);
+  // 4. Record the start time immediately before clicking login
+  const startTime = Date.now();
 
-  // 5. Wait for the inventory list to confirm the page loaded
+  // 5. Locate and click the login submission button
+  await page.locator('#login-button').click();
+
+  // 6. Wait for the inventory list to confirm the page loaded
   await expect(page.locator('.inventory_list')).toBeVisible();
 
-  // 6. Retrieve response timing data from CDP
-  const timing = response.request().timing();
-  const duration = timing.responseEnd;
-  console.log(`Login-to-inventory responseEnd: ${duration.toFixed(2)}ms`);
+  // 7. Record the end time and calculate duration
+  const duration = Date.now() - startTime;
+  console.log(`Login-to-inventory duration: ${duration}ms`);
 
-  // 7. Assertion: Duration must be within the defined threshold
+  // 8. Assertion: Duration must be within the defined threshold
   expect(duration).toBeLessThan(3000);
 
 });

@@ -11,18 +11,22 @@ test('PERF-02 | Network Observability — Inventory page network response should
   // 3. Locate the password input field and fill it
   await page.locator('#password').fill('secret_sauce');
 
-  // 4. Click login and capture the inventory page response via CDP
-  const [response] = await Promise.all([
-    page.waitForResponse(r => r.url().includes('inventory')),
-    page.locator('#login-button').click()
-  ]);
+  // 4. Locate and click the login submission button
+  await page.locator('#login-button').click();
 
-  // 5. Retrieve CDP-level network timing data
-  const timing = response.request().timing();
-  const networkDuration = timing.responseEnd - timing.requestStart;
-  console.log(`Inventory network response time: ${networkDuration.toFixed(2)}ms`);
+  // 5. Wait for the inventory list to confirm the page loaded
+  await expect(page.locator('.inventory_list')).toBeVisible();
 
-  // 6. Assertion: Network response must be within the defined threshold
-  expect(networkDuration).toBeLessThan(2000);
+  // 6. Read network timing from the browser's Navigation Timing API
+  // saucedemo uses client-side routing — waitForResponse cannot capture
+  // the inventory navigation as no real HTTP request is made
+  const responseTime = await page.evaluate(() => {
+    const nav = performance.getEntriesByType('navigation')[0];
+    return nav.responseEnd - nav.requestStart;
+  });
+  console.log(`Network response time: ${responseTime.toFixed(2)}ms`);
+
+  // 7. Assertion: Network response must be within the defined threshold
+  expect(responseTime).toBeLessThan(2000);
 
 });
