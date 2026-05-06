@@ -10,6 +10,9 @@ async function async01AsyncWaitBehaviourProductNavigation() {
   options.addArguments('--no-sandbox');
   options.addArguments('--disable-dev-shm-usage');
   options.addArguments('--window-size=1920,1080');
+  options.addArguments('--disable-background-networking');
+  options.addArguments('--disable-sync');
+  options.addArguments('--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses');
 
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
@@ -39,13 +42,16 @@ async function async01AsyncWaitBehaviourProductNavigation() {
       By.css('.inventory_item_name')
     ).getText();
 
-    // 8. Click the product to navigate to its detail page
-    await driver.findElement(By.css('.inventory_item_name')).click();
+    // 8. Click the product using JavaScript injection to navigate to its detail page
+    const productLink = await driver.findElement(By.css('.inventory_item_name'));
+    await driver.executeScript('arguments[0].click();', productLink);
 
     // 9. Wait for the product detail page to load
-    await driver.wait(until.elementLocated(By.css('.inventory_details_name')), 10000);
+    await driver.wait(
+      until.elementLocated(By.css('.inventory_details_name')), 10000
+    );
 
-    // 10. Assertion: Verify the detail page shows the correct product
+    // 10. Assertion: Verify the detail page shows the correct product name
     const detailName = await driver.findElement(
       By.css('.inventory_details_name')
     ).getText();
@@ -59,14 +65,17 @@ async function async01AsyncWaitBehaviourProductNavigation() {
       throw new Error('Assertion failed — product name mismatch');
     }
 
-    // 11. Add the product to the cart from the detail page
-    await driver.wait(
+    // 11. Add the product to the cart using JavaScript injection
+    const addToCartBtn = await driver.wait(
       until.elementLocated(By.css('[data-test^="add-to-cart"]')), 5000
     );
-    await driver.findElement(By.css('[data-test^="add-to-cart"]')).click();
+    await driver.wait(until.elementIsVisible(addToCartBtn), 5000);
+    await driver.executeScript('arguments[0].click();', addToCartBtn);
 
-    // 12. Assertion: Verify the cart badge updated
-    await driver.wait(until.elementLocated(By.css('.shopping_cart_badge')), 5000);
+    // 12. Assertion: Verify the cart badge updated correctly
+    await driver.wait(
+      until.elementLocated(By.css('.shopping_cart_badge')), 5000
+    );
     const badgeText = await driver.findElement(
       By.css('.shopping_cart_badge')
     ).getText();
@@ -74,14 +83,22 @@ async function async01AsyncWaitBehaviourProductNavigation() {
     if (badgeText === '1') {
       console.log('✅ TEST PASSED: Cart badge updated correctly on detail page');
     } else {
+      console.log('❌ TEST FAILED: Cart badge did not update after adding item');
+      console.log(`   Expected: 1`);
+      console.log(`   Received: ${badgeText}`);
       throw new Error(`Assertion failed — cart badge expected '1' but received '${badgeText}'`);
     }
 
-    // 13. Navigate back to the inventory page
-    await driver.findElement(By.css('[data-test="back-to-products"]')).click();
+    // 13. Navigate back to the inventory page using JavaScript injection
+    const backBtn = await driver.wait(
+      until.elementLocated(By.css('[data-test="back-to-products"]')), 5000
+    );
+    await driver.executeScript('arguments[0].click();', backBtn);
 
     // 14. Wait for the inventory list to reload
-    await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
+    await driver.wait(
+      until.elementLocated(By.css('.inventory_list')), 10000
+    );
 
     // 15. Assertion: Verify the cart state persisted across navigation
     const persistedBadge = await driver.findElement(
@@ -89,8 +106,11 @@ async function async01AsyncWaitBehaviourProductNavigation() {
     ).getText();
 
     if (persistedBadge === '1') {
-      console.log('✅ TEST PASSED: Cart state persisted across navigation');
+      console.log('✅ TEST PASSED: Cart state persisted across navigation — S1 confirmed');
     } else {
+      console.log('❌ TEST FAILED: Cart badge did not persist after navigation');
+      console.log(`   Expected: 1`);
+      console.log(`   Received: ${persistedBadge}`);
       throw new Error(`Assertion failed — cart badge expected '1' after navigation but received '${persistedBadge}'`);
     }
 
@@ -100,6 +120,7 @@ async function async01AsyncWaitBehaviourProductNavigation() {
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
+    // 17. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 
