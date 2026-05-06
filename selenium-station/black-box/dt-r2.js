@@ -15,7 +15,7 @@ async function dtR2DecisionTableCheckoutFormPostcodeMissing() {
   options.addArguments('--disable-background-networking');
   options.addArguments('--disable-sync');
   options.addArguments('--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses');
-
+  options.addArguments('--window-size=1920,1080');
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
     .forBrowser('chrome')

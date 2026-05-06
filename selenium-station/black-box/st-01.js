@@ -56,13 +56,20 @@ async function st01StateTransitionCartEmptyState() {
     const removeButtons = await driver.findElements(By.css('.btn_inventory'));
     await removeButtons[0].click();
 
-    // 10. Wait until the cart badge disappears from the page
-    // driver.wait() with a custom function keeps checking until it returns true
-    // This replaces driver.sleep() which was an unreliable hardcoded guess
-    await driver.wait(async () => {
-      const badges = await driver.findElements(By.css('.shopping_cart_badge'));
-      return badges.length === 0;
-    }, 10000, 'Cart badge did not disappear after item removal');
+    // 10. Retry loop — wait for badge to disappear
+let badgeGone = false;
+let attempts = 0;
+while (!badgeGone && attempts < 30) {
+  await driver.sleep(300);
+  const badges = await driver.findElements(By.css('.shopping_cart_badge'));
+  if (badges.length === 0) badgeGone = true;
+  attempts++;
+}
+if (badgeGone) {
+  console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');
+} else {
+  throw new Error('Assertion failed — cart badge did not disappear after item removal');
+}
 
     // 11. Assertion: Confirm the cart is now in the empty state
     console.log('✅ TEST PASSED: Cart badge is gone — S1 empty state confirmed');

@@ -9,12 +9,10 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
   options.addArguments('--headless=new');
   options.addArguments('--no-sandbox');
   options.addArguments('--disable-dev-shm-usage');
-  // Disable Chrome background services that interfere with test execution
+  options.addArguments('--window-size=1920,1080');
   options.addArguments('--disable-background-networking');
   options.addArguments('--disable-sync');
   options.addArguments('--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses');
-  // ADD THIS LINE to fix the sticky header interception:
-  options.addArguments('--window-size=1920,1080');
 
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
@@ -39,7 +37,8 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
     // 6. Wait for the inventory list to confirm successful login
     await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
 
-    // 7. Click each Add to Cart button using its unique data-test selector
+    // 7. Click each Add to Cart button and confirm each click registered
+    // before moving to the next — synchronises with React state updates
     const addToCartSelectors = [
       '[data-test="add-to-cart-sauce-labs-backpack"]',
       '[data-test="add-to-cart-sauce-labs-bike-light"]',
@@ -49,25 +48,32 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
       '[data-test="add-to-cart-test.allthethings()-t-shirt-(red)"]'
     ];
 
-    for (const selector of addToCartSelectors) {
-      // Wait for it to exist in the DOM
-      const button = await driver.wait(until.elementLocated(By.css(selector)), 5000);
-      
-      // Wait for it to be visible on screen
+    for (let i = 0; i < addToCartSelectors.length; i++) {
+      const button = await driver.wait(
+        until.elementLocated(By.css(addToCartSelectors[i])), 5000
+      );
       await driver.wait(until.elementIsVisible(button), 5000);
-      
-      // Click it instantly — NO SLEEP!
       await button.click();
+
+      // Retry loop — wait for badge to confirm this click registered
+      const expectedCount = String(i + 1);
+      let confirmed = false;
+      let attempts = 0;
+      while (!confirmed && attempts < 20) {
+        await driver.sleep(500);
+        const badges = await driver.findElements(By.css('.shopping_cart_badge'));
+        if (badges.length > 0) {
+          const text = await badges[0].getText();
+          if (text === expectedCount) confirmed = true;
+        }
+        attempts++;
+      }
+      if (!confirmed) {
+        throw new Error(`Click ${i + 1} not registered — badge did not reach ${expectedCount}`);
+      }
     }
 
-    // 8. Explicitly poll the cart badge until it reaches the boundary value of '6'
-    await driver.wait(async () => {
-      const badge = await driver.findElements(By.css('.shopping_cart_badge'));
-      if (badge.length === 0) return false; // Badge doesn't exist yet
-      const text = await badge[0].getText();
-      return text === '6';
-    }, 5000, "Cart badge did not reach 6 in time");
-
+    // 8. All six clicks confirmed — assert final count
     console.log('✅ TEST PASSED: Cart badge correctly displays the maximum count of 6');
 
     // 9. Stop the timer and log execution time
