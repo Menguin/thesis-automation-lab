@@ -3,14 +3,18 @@ const chrome = require('selenium-webdriver/chrome');
 
 async function bva01BoundaryValueAnalysisCartItemCount() {
 
-  // Start the timer
   const startTime = Date.now();
 
-  // Configure Chrome to run headless (required for CI environments with no display)
   let options = new chrome.Options();
   options.addArguments('--headless=new');
   options.addArguments('--no-sandbox');
   options.addArguments('--disable-dev-shm-usage');
+  // Disable Chrome background services that interfere with test execution
+  options.addArguments('--disable-background-networking');
+  options.addArguments('--disable-sync');
+  options.addArguments('--disable-features=AutofillServerCommunication,AutofillEnableAccountStorageForAddresses');
+  // ADD THIS LINE to fix the sticky header interception:
+  options.addArguments('--window-size=1920,1080');
 
   // 1. Launch a headless Chrome instance
   const driver = await new Builder()
@@ -33,36 +37,46 @@ async function bva01BoundaryValueAnalysisCartItemCount() {
     await driver.findElement(By.id('login-button')).click();
 
     // 6. Wait for the inventory list to confirm successful login
-    await driver.wait(until.elementLocated(By.css('.inventory_list')), 5000);
+    await driver.wait(until.elementLocated(By.css('.inventory_list')), 10000);
 
-    // 7. Locate all Add to Cart buttons and click each one individually
-const addButtons = await driver.findElements(By.css('.btn_inventory'));
-for (const button of addButtons) {
-  await button.click();
-  await driver.sleep(500);
-}
+    // 7. Click each Add to Cart button using its unique data-test selector
+    const addToCartSelectors = [
+      '[data-test="add-to-cart-sauce-labs-backpack"]',
+      '[data-test="add-to-cart-sauce-labs-bike-light"]',
+      '[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]',
+      '[data-test="add-to-cart-sauce-labs-fleece-jacket"]',
+      '[data-test="add-to-cart-sauce-labs-onesie"]',
+      '[data-test="add-to-cart-test.allthethings()-t-shirt-(red)"]'
+    ];
 
-    // 8. Retrieve the cart badge element and read its displayed text
-    const badge = await driver.findElement(By.css('.shopping_cart_badge'));
-    const badgeText = await badge.getText();
-
-    // 9. Assertion: Verify the cart badge displays the maximum item count of 6
-    if (badgeText === '6') {
-      console.log('✅ TEST PASSED: Cart badge correctly displays the maximum count of 6');
-    } else {
-      console.log('❌ TEST FAILED: Cart badge does not reflect the correct item count');
-      console.log(`   Expected: 6`);
-      console.log(`   Received: ${badgeText}`);
-      throw new Error(`Assertion failed — cart badge expected '6' but received '${badgeText}'`);
+    for (const selector of addToCartSelectors) {
+      // Wait for it to exist in the DOM
+      const button = await driver.wait(until.elementLocated(By.css(selector)), 5000);
+      
+      // Wait for it to be visible on screen
+      await driver.wait(until.elementIsVisible(button), 5000);
+      
+      // Click it instantly — NO SLEEP!
+      await button.click();
     }
 
-    // 10. Stop the timer and log execution time
+    // 8. Explicitly poll the cart badge until it reaches the boundary value of '6'
+    await driver.wait(async () => {
+      const badge = await driver.findElements(By.css('.shopping_cart_badge'));
+      if (badge.length === 0) return false; // Badge doesn't exist yet
+      const text = await badge[0].getText();
+      return text === '6';
+    }, 5000, "Cart badge did not reach 6 in time");
+
+    console.log('✅ TEST PASSED: Cart badge correctly displays the maximum count of 6');
+
+    // 9. Stop the timer and log execution time
     const endTime = Date.now();
     const duration = (endTime - startTime) / 1000;
     console.log(`⏱️ Execution Time: ${duration}s`);
 
   } finally {
-    // 11. Always close the browser when done, even if the test fails
+    // 10. Always close the browser when done, even if the test fails
     await driver.quit();
   }
 
