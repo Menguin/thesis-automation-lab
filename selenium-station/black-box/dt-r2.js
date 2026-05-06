@@ -1,7 +1,7 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
-async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
+async function dtR2DecisionTableCheckoutFormPostcodeMissing() {
 
   const startTime = Date.now();
 
@@ -122,4 +122,4 @@ async function dtR1DecisionTableCheckoutFormPostcodeMissing() {
 
 }
 
-dtR1DecisionTableCheckoutFormPostcodeMissing();
+dtR2DecisionTableCheckoutFormPostcodeMissing();
