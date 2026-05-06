@@ -285,3 +285,12 @@ Intelligent Abstraction (Cypress & Playwright): Cypress and Playwright did not s
 
 Thesis Implication:
 This exposes another significant layer of Operational Overhead associated with raw WebDriver implementations. Selenium requires the engineer to manually manage physical rendering constraints and viewport dimensions (e.g., injecting --window-size=1920,1080 into the Chrome options) to prevent silent interaction failures. Modern tools completely abstract this UI layout complexity, guaranteeing that if a click is commanded, it hits the intended target.
+
+Milestone: Selenium Station Fully Stabilised — Final Three Files Rewritten
+Date: May 06, 2026
+Status: All five Selenium tests passing locally and on CI.
+Changes applied:
+bva-01.js — The entire click loop was rewritten with a per-click retry engine using JavaScript injection (driver.executeScript('arguments[0].click()')). After each click, a retry loop checks the badge count incremented before moving to the next button. If a click is dropped by the browser — due to React state batching or CI runner load — the loop retries up to 10 times before failing. This manually replicates the action retryability that Cypress and Playwright provide natively on every interaction.
+dt-r2.js — Three additions: --window-size=1920,1080 to fix the mobile layout on CI, --incognito to fully prevent Chrome autofill from accessing saved addresses, and a cart navigation retry loop that checks the URL changed to cart.html before proceeding. JavaScript injection used for checkout and continue button clicks.
+st-01.js — --window-size=1920,1080 added. The remove button is now targeted by its specific data-test="remove-sauce-labs-backpack" selector rather than a generic class selector. JavaScript injection and retry loop replace the standard click and async wait pattern.
+Thesis insight: The complete list of infrastructure built manually in Selenium to achieve what Cypress and Playwright provide out of the box now stands as follows — manual browser teardown, explicit page transition waits, Chrome background service flags, autofill suppression, incognito mode, window size configuration per file, React synchronisation loops, Node version standardisation, custom suite runner, JavaScript click injection, and per-click action retryability loops. Every item on this list is zero lines of code in Cypress and Playwright.
