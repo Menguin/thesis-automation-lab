@@ -1,6 +1,6 @@
 const benchmarkData = {
   "metadata": {
-    "timestamp": "2026-05-19T10:54:29.987Z",
+    "timestamp": "2026-05-19T11:10:22.219Z",
     "totalRuns": 1,
     "node": "v20.20.2",
     "platform": "win32"
@@ -8,18 +8,18 @@ const benchmarkData = {
   "runs": [
     {
       "runNumber": 1,
-      "timestamp": "2026-05-19T10:54:29.994Z",
+      "timestamp": "2026-05-19T11:10:22.224Z",
       "cypress": {
         "passed": true,
-        "durationMs": 67507
+        "durationMs": 23002
       },
       "playwright": {
         "passed": true,
-        "durationMs": 25112
+        "durationMs": 9302
       },
       "selenium": {
         "passed": true,
-        "durationMs": 11359
+        "durationMs": 8431
       }
     }
   ],
@@ -29,33 +29,33 @@ const benchmarkData = {
       "passed": 1,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 67507,
+      "meanMs": 23002,
       "stdDevMs": 0,
-      "minMs": 67507,
-      "maxMs": 67507,
-      "medianMs": 67507
+      "minMs": 23002,
+      "maxMs": 23002,
+      "medianMs": 23002
     },
     "playwright": {
       "runs": 1,
       "passed": 1,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 25112,
+      "meanMs": 9302,
       "stdDevMs": 0,
-      "minMs": 25112,
-      "maxMs": 25112,
-      "medianMs": 25112
+      "minMs": 9302,
+      "maxMs": 9302,
+      "medianMs": 9302
     },
     "selenium": {
       "runs": 1,
       "passed": 1,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 11359,
+      "meanMs": 8431,
       "stdDevMs": 0,
-      "minMs": 11359,
-      "maxMs": 11359,
-      "medianMs": 11359
+      "minMs": 8431,
+      "maxMs": 8431,
+      "medianMs": 8431
     }
   }
 };
