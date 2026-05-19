@@ -433,3 +433,50 @@ The most important overall finding is that comparing Selenium, Playwright, and C
 Cypress and Playwright are testing frameworks. They ship with a test runner, assertion library, network interception, automatic waiting, browser lifecycle management, structured reporting, and CI integration. The developer writes test logic.
 Selenium is a browser automation library. It provides a protocol for sending instructions to a browser. Everything else — the runner, the assertions, the waits, the retries, the reporting, the CI configuration — is the developer's responsibility.
 The choice between them is not a preference question. It is an architectural question about how much infrastructure the team is willing to build and maintain. This lab has produced a concrete, reproducible, and documented answer to what that infrastructure costs.
+
+## Milestone: Benchmark Runner and Visualization Layer Implemented
+Date: May 06, 2026
+What was built
+A configurable benchmark runner was added at the project root, benchmark.js, that accepts a number of iterations as a command-line argument and runs the benchmarking suite across all three stations that many times. Each iteration measures the total execution time per framework, captures pass/fail status from the exit code, and persists the data after every run so progress is not lost if the process is interrupted.
+The runner produces two output files in the results/ folder. benchmark-data.json contains the structured raw data and computed statistics. benchmark-data.js contains the same data exported as a global JavaScript variable, allowing the visualization HTML to load it without requiring a local web server.
+A dedicated Selenium runner, selenium-station/benchmarking-runner.js, was added alongside the main runner.js. The benchmarking runner scans only the benchmarking folder, ensuring that the 30-run benchmark measures the four benchmark tests in isolation without inflating timing data with black-box test execution.
+A visualization page, results/charts.html, was added to render the benchmark data graphically. It loads Chart.js from a public CDN and renders four charts plus a complete statistics table — mean execution time per framework, execution time across all runs as a line series, flakiness rate as a percentage, and a min/mean/max distribution comparison. The HTML reads the JS-loadable data file at load time, allowing the charts to be opened directly in any browser by double-clicking the file.
+The npm scripts were extended with three benchmark-specific commands — run-benchmark-cypress, run-benchmark-playwright, and run-benchmark-selenium — each scoped to the benchmarking folder of its respective station. These are called sequentially by the main benchmark.js runner for each iteration.
+In addition, the Cypress and Playwright run scripts were updated to emit native JSON reporter output to results/cypress.json and results/playwright.json. These per-test JSON reports are supplementary to the benchmark data and provide granular per-test timing should it be needed for additional analysis.
+Statistical Methodology
+For each framework, the runner computes:
+
+Mean execution time across all runs
+Standard deviation, indicating consistency
+Minimum and maximum to capture the range
+Median to identify the central tendency
+Flakiness rate as a percentage of failed runs
+
+These calculations are performed directly in the runner using the standard statistical formulas. Variance is computed as the average squared difference from the mean. Standard deviation is the square root of variance. The data is calculated against the actual recorded durations rather than estimated, ensuring the reported statistics reflect real execution measurements.
+The Central Limit Theorem requires n ≥ 30 for statistical validity, which is why the benchmark is intended to be run with at least 30 iterations. The runner accepts any iteration count via the command line, allowing smaller test runs (5 iterations) during development verification and full 30-run executions for thesis data collection.
+Initial Verification Run
+A 1-iteration verification run was executed locally to confirm the entire pipeline works end to end. The results were notable enough to warrant comment as an early observation:
+
+Cypress: 67,507ms
+Playwright: 25,112ms
+Selenium: 11,359ms
+
+This single-run snapshot contradicts the common claim in framework comparison articles that Selenium is the slowest. The reason is structural — Cypress's Electron runner has substantial startup overhead and JSON reporter processing time, Playwright spawns multiple parallel browser contexts that each carry initialization cost, and Selenium's custom runner is lean with per-test Chrome launches that are individually slower but cumulatively lighter than the alternatives.
+This is precisely the kind of finding the benchmark methodology is designed to produce — measured data that contradicts received wisdom and forces the analysis to engage with structural causes rather than relying on common assumptions.
+The 30-run benchmark will produce the full statistical distribution needed for the thesis comparison chapter. The 1-run verification confirms the harness itself is operating correctly and producing valid data.
+Pending
+The 30-iteration benchmark execution and resulting data collection. Once the CI pipeline confirms the additions are clean, the full benchmark will be executed and the data committed alongside the visualization for thesis evidence.
+Files Added
+
+benchmark.js — runner at project root
+selenium-station/benchmarking-runner.js — Selenium-only benchmarking suite runner
+results/charts.html — visualization page
+results/benchmark-data.json — raw benchmark data (auto-generated)
+results/benchmark-data.js — JS-loadable benchmark data (auto-generated)
+results/cypress.json — Cypress per-test report (auto-generated)
+results/playwright.json — Playwright per-test report (auto-generated)
+
+Files Modified
+
+package.json — three benchmark npm scripts added, Cypress and Playwright scripts updated to emit JSON reports
+
