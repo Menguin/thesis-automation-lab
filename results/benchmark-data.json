@@ -1,125 +1,525 @@
 {
   "metadata": {
-    "timestamp": "2026-05-19T11:24:32.271Z",
-    "totalRuns": 5,
+    "timestamp": "2026-05-19T11:54:17.550Z",
+    "totalRuns": 30,
     "node": "v20.20.2",
     "platform": "win32"
   },
   "runs": [
     {
       "runNumber": 1,
-      "timestamp": "2026-05-19T11:24:32.275Z",
+      "timestamp": "2026-05-19T11:54:17.555Z",
       "cypress": {
         "passed": true,
-        "durationMs": 69190
+        "durationMs": 21496
       },
       "playwright": {
         "passed": true,
-        "durationMs": 25826
+        "durationMs": 12056
       },
       "selenium": {
         "passed": true,
-        "durationMs": 15457
+        "durationMs": 9127
       }
     },
     {
       "runNumber": 2,
-      "timestamp": "2026-05-19T11:26:22.754Z",
+      "timestamp": "2026-05-19T11:55:00.236Z",
       "cypress": {
         "passed": true,
-        "durationMs": 28899
+        "durationMs": 19282
       },
       "playwright": {
         "passed": true,
-        "durationMs": 7446
+        "durationMs": 5614
       },
       "selenium": {
         "passed": true,
-        "durationMs": 8910
+        "durationMs": 7541
       }
     },
     {
       "runNumber": 3,
-      "timestamp": "2026-05-19T11:27:08.014Z",
+      "timestamp": "2026-05-19T11:55:32.676Z",
       "cypress": {
         "passed": true,
-        "durationMs": 25607
+        "durationMs": 20699
       },
       "playwright": {
         "passed": true,
-        "durationMs": 7308
+        "durationMs": 5678
       },
       "selenium": {
         "passed": true,
-        "durationMs": 8883
+        "durationMs": 7937
       }
     },
     {
       "runNumber": 4,
-      "timestamp": "2026-05-19T11:27:49.815Z",
+      "timestamp": "2026-05-19T11:56:06.995Z",
       "cypress": {
         "passed": true,
-        "durationMs": 25066
+        "durationMs": 22790
       },
       "playwright": {
         "passed": true,
-        "durationMs": 7675
+        "durationMs": 6777
       },
       "selenium": {
         "passed": true,
-        "durationMs": 8902
+        "durationMs": 11569
       }
     },
     {
       "runNumber": 5,
-      "timestamp": "2026-05-19T11:28:31.461Z",
+      "timestamp": "2026-05-19T11:56:48.133Z",
       "cypress": {
         "passed": true,
-        "durationMs": 25319
+        "durationMs": 20913
       },
       "playwright": {
         "passed": true,
-        "durationMs": 7145
+        "durationMs": 6382
       },
       "selenium": {
         "passed": true,
-        "durationMs": 8696
+        "durationMs": 8342
+      }
+    },
+    {
+      "runNumber": 6,
+      "timestamp": "2026-05-19T11:57:23.772Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 28827
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6384
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 8068
+      }
+    },
+    {
+      "runNumber": 7,
+      "timestamp": "2026-05-19T11:58:07.053Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24379
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6444
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 10598
+      }
+    },
+    {
+      "runNumber": 8,
+      "timestamp": "2026-05-19T11:58:48.475Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23368
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 9722
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7950
+      }
+    },
+    {
+      "runNumber": 9,
+      "timestamp": "2026-05-19T11:59:29.517Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24114
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6341
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7881
+      }
+    },
+    {
+      "runNumber": 10,
+      "timestamp": "2026-05-19T12:00:07.854Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24276
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6455
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7825
+      }
+    },
+    {
+      "runNumber": 11,
+      "timestamp": "2026-05-19T12:00:46.411Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24893
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6639
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7871
+      }
+    },
+    {
+      "runNumber": 12,
+      "timestamp": "2026-05-19T12:01:25.815Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 22572
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6364
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7841
+      }
+    },
+    {
+      "runNumber": 13,
+      "timestamp": "2026-05-19T12:02:02.595Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 22388
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6440
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7869
+      }
+    },
+    {
+      "runNumber": 14,
+      "timestamp": "2026-05-19T12:02:39.294Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 22997
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6446
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7902
+      }
+    },
+    {
+      "runNumber": 15,
+      "timestamp": "2026-05-19T12:03:16.640Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 22653
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6414
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 9442
+      }
+    },
+    {
+      "runNumber": 16,
+      "timestamp": "2026-05-19T12:03:55.152Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23283
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6641
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 8089
+      }
+    },
+    {
+      "runNumber": 17,
+      "timestamp": "2026-05-19T12:04:33.167Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 22746
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6596
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 9037
+      }
+    },
+    {
+      "runNumber": 18,
+      "timestamp": "2026-05-19T12:05:11.548Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24894
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6706
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 8668
+      }
+    },
+    {
+      "runNumber": 19,
+      "timestamp": "2026-05-19T12:05:51.819Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 25749
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6611
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 8013
+      }
+    },
+    {
+      "runNumber": 20,
+      "timestamp": "2026-05-19T12:06:32.194Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23084
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6692
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7956
+      }
+    },
+    {
+      "runNumber": 21,
+      "timestamp": "2026-05-19T12:07:09.928Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23258
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6667
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 8185
+      }
+    },
+    {
+      "runNumber": 22,
+      "timestamp": "2026-05-19T12:07:48.040Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23392
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6641
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 8326
+      }
+    },
+    {
+      "runNumber": 23,
+      "timestamp": "2026-05-19T12:08:26.401Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 25114
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6633
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 12266
+      }
+    },
+    {
+      "runNumber": 24,
+      "timestamp": "2026-05-19T12:09:10.416Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24641
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6473
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7944
+      }
+    },
+    {
+      "runNumber": 25,
+      "timestamp": "2026-05-19T12:09:49.478Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 25098
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6597
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 11124
+      }
+    },
+    {
+      "runNumber": 26,
+      "timestamp": "2026-05-19T12:10:32.299Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24738
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6703
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 10968
+      }
+    },
+    {
+      "runNumber": 27,
+      "timestamp": "2026-05-19T12:11:14.710Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 24865
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6765
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7957
+      }
+    },
+    {
+      "runNumber": 28,
+      "timestamp": "2026-05-19T12:11:54.300Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23996
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6596
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7977
+      }
+    },
+    {
+      "runNumber": 29,
+      "timestamp": "2026-05-19T12:12:32.871Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 21396
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6638
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7971
+      }
+    },
+    {
+      "runNumber": 30,
+      "timestamp": "2026-05-19T12:13:08.879Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 23378
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 6631
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 7970
       }
     }
   ],
   "statistics": {
     "cypress": {
-      "runs": 5,
-      "passed": 5,
+      "runs": 30,
+      "passed": 30,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 34816,
-      "stdDevMs": 17243,
-      "minMs": 25066,
-      "maxMs": 69190,
-      "medianMs": 25607
+      "meanMs": 23509,
+      "stdDevMs": 1774,
+      "minMs": 19282,
+      "maxMs": 28827,
+      "medianMs": 23378
     },
     "playwright": {
-      "runs": 5,
-      "passed": 5,
+      "runs": 30,
+      "passed": 30,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 11080,
-      "stdDevMs": 7375,
-      "minMs": 7145,
-      "maxMs": 25826,
-      "medianMs": 7446
+      "meanMs": 6792,
+      "stdDevMs": 1165,
+      "minMs": 5614,
+      "maxMs": 12056,
+      "medianMs": 6611
     },
     "selenium": {
-      "runs": 5,
-      "passed": 5,
+      "runs": 30,
+      "passed": 30,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 10170,
-      "stdDevMs": 2645,
-      "minMs": 8696,
-      "maxMs": 15457,
-      "medianMs": 8902
+      "meanMs": 8674,
+      "stdDevMs": 1266,
+      "minMs": 7541,
+      "maxMs": 12266,
+      "medianMs": 8013
     }
   }
 }
