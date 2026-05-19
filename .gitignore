@@ -10,8 +10,10 @@ cypress/screenshots/eg-01-whitespace-bypass/
 cypress/videos/eg-01-whitespace-bypass/
 
 # 4. THESIS DATA (Evidence for benchmarks)
-# results/*.json is NOT ignored so raw data remains
-# visible and verifiable on GitHub.
+# Benchmark data files committed for thesis evidence
+# results/benchmark-data.json
+# results/benchmark-data.js
+# results/charts.html
 
 # 5. Security & Environment
 .env

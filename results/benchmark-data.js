@@ -1,0 +1,61 @@
+const benchmarkData = {
+  "metadata": {
+    "timestamp": "2026-05-19T10:54:29.987Z",
+    "totalRuns": 1,
+    "node": "v20.20.2",
+    "platform": "win32"
+  },
+  "runs": [
+    {
+      "runNumber": 1,
+      "timestamp": "2026-05-19T10:54:29.994Z",
+      "cypress": {
+        "passed": true,
+        "durationMs": 67507
+      },
+      "playwright": {
+        "passed": true,
+        "durationMs": 25112
+      },
+      "selenium": {
+        "passed": true,
+        "durationMs": 11359
+      }
+    }
+  ],
+  "statistics": {
+    "cypress": {
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "flakinessRate": 0,
+      "meanMs": 67507,
+      "stdDevMs": 0,
+      "minMs": 67507,
+      "maxMs": 67507,
+      "medianMs": 67507
+    },
+    "playwright": {
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "flakinessRate": 0,
+      "meanMs": 25112,
+      "stdDevMs": 0,
+      "minMs": 25112,
+      "maxMs": 25112,
+      "medianMs": 25112
+    },
+    "selenium": {
+      "runs": 1,
+      "passed": 1,
+      "failed": 0,
+      "flakinessRate": 0,
+      "meanMs": 11359,
+      "stdDevMs": 0,
+      "minMs": 11359,
+      "maxMs": 11359,
+      "medianMs": 11359
+    }
+  }
+};

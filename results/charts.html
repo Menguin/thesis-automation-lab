@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Thesis Automation Lab — Benchmark Results</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  body {
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #f5f5f5;
+    color: #2c3e50;
+  }
+  h1 { font-size: 2em; border-bottom: 3px solid #2c3e50; padding-bottom: 10px; }
+  h2 { font-size: 1.3em; margin-top: 0; color: #34495e; }
+  .metadata {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin: 20px 0;
+    font-size: 0.95em;
+  }
+  .chart-container {
+    background: white;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e1e4e8; }
+  th { background: #f6f8fa; font-weight: 600; }
+  tr:hover { background: #fafbfc; }
+  .error { background: #fff3f3; border-left: 4px solid #d9534f; padding: 20px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Thesis Automation Lab — Benchmark Results</h1>
+<div id="root">Loading...</div>
+
+<script src="benchmark-data.js" onerror="showError()"></script>
+<script>
+function showError() {
+  document.getElementById('root').innerHTML = `
+    <div class="error">
+      <h2>Data Not Found</h2>
+      <p>benchmark-data.js was not found in this folder.</p>
+      <p>Run <code>node benchmark.js 30</code> from the project root to generate it.</p>
+    </div>
+  `;
+}
+
+if (typeof benchmarkData !== 'undefined') {
+  renderAll(benchmarkData);
+} else {
+  showError();
+}
+
+function renderAll(data) {
+  const stats = data.statistics;
+  const colors = {
+    cypress: '#17202C',
+    playwright: '#2EAD33',
+    selenium: '#43B02A'
+  };
+
+  document.getElementById('root').innerHTML = `
+    <div class="metadata">
+      <strong>Runs:</strong> ${data.metadata.totalRuns} &nbsp;|&nbsp;
+      <strong>Date:</strong> ${new Date(data.metadata.timestamp).toLocaleString()} &nbsp;|&nbsp;
+      <strong>Node:</strong> ${data.metadata.node} &nbsp;|&nbsp;
+      <strong>Platform:</strong> ${data.metadata.platform}
+    </div>
+
+    <div class="chart-container">
+      <h2>Mean Execution Time per Framework</h2>
+      <canvas id="meanChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Execution Time Across All Runs</h2>
+      <canvas id="timeSeriesChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Flakiness Rate per Framework (% Failed Runs)</h2>
+      <canvas id="flakinessChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Distribution — Min / Mean / Max</h2>
+      <canvas id="distributionChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h2>Detailed Statistics</h2>
+      <table id="statsTable"></table>
+    </div>
+  `;
+
+  // Mean execution time bar chart
+  new Chart(document.getElementById('meanChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Cypress', 'Playwright', 'Selenium'],
+      datasets: [{
+        label: 'Mean Execution Time (ms)',
+        data: [stats.cypress.meanMs, stats.playwright.meanMs, stats.selenium.meanMs],
+        backgroundColor: [colors.cypress, colors.playwright, colors.selenium]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { title: { display: true, text: 'Milliseconds' } } }
+    }
+  });
+
+  // Time series — every run
+  new Chart(document.getElementById('timeSeriesChart'), {
+    type: 'line',
+    data: {
+      labels: data.runs.map(r => `Run ${r.runNumber}`),
+      datasets: [
+        { label: 'Cypress', data: data.runs.map(r => r.cypress.durationMs), borderColor: colors.cypress, backgroundColor: colors.cypress + '20', tension: 0.2 },
+        { label: 'Playwright', data: data.runs.map(r => r.playwright.durationMs), borderColor: colors.playwright, backgroundColor: colors.playwright + '20', tension: 0.2 },
+        { label: 'Selenium', data: data.runs.map(r => r.selenium.durationMs), borderColor: colors.selenium, backgroundColor: colors.selenium + '20', tension: 0.2 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { title: { display: true, text: 'Milliseconds' } } }
+    }
+  });
+
+  // Flakiness rate
+  new Chart(document.getElementById('flakinessChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Cypress', 'Playwright', 'Selenium'],
+      datasets: [{
+        label: 'Flakiness Rate (%)',
+        data: [stats.cypress.flakinessRate, stats.playwright.flakinessRate, stats.selenium.flakinessRate],
+        backgroundColor: [colors.cypress, colors.playwright, colors.selenium]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { title: { display: true, text: 'Percentage' }, max: 100 } }
+    }
+  });
+
+  // Distribution chart — min/mean/max
+  new Chart(document.getElementById('distributionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Minimum', 'Mean', 'Maximum'],
+      datasets: [
+        { label: 'Cypress', data: [stats.cypress.minMs, stats.cypress.meanMs, stats.cypress.maxMs], backgroundColor: colors.cypress },
+        { label: 'Playwright', data: [stats.playwright.minMs, stats.playwright.meanMs, stats.playwright.maxMs], backgroundColor: colors.playwright },
+        { label: 'Selenium', data: [stats.selenium.minMs, stats.selenium.meanMs, stats.selenium.maxMs], backgroundColor: colors.selenium }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { title: { display: true, text: 'Milliseconds' } } }
+    }
+  });
+
+  // Stats table
+  document.getElementById('statsTable').innerHTML = `
+    <thead><tr><th>Metric</th><th>Cypress</th><th>Playwright</th><th>Selenium</th></tr></thead>
+    <tbody>
+      <tr><td>Total Runs</td><td>${stats.cypress.runs}</td><td>${stats.playwright.runs}</td><td>${stats.selenium.runs}</td></tr>
+      <tr><td>Passed</td><td>${stats.cypress.passed}</td><td>${stats.playwright.passed}</td><td>${stats.selenium.passed}</td></tr>
+      <tr><td>Failed</td><td>${stats.cypress.failed}</td><td>${stats.playwright.failed}</td><td>${stats.selenium.failed}</td></tr>
+      <tr><td>Flakiness Rate</td><td>${stats.cypress.flakinessRate}%</td><td>${stats.playwright.flakinessRate}%</td><td>${stats.selenium.flakinessRate}%</td></tr>
+      <tr><td>Mean (ms)</td><td>${stats.cypress.meanMs}</td><td>${stats.playwright.meanMs}</td><td>${stats.selenium.meanMs}</td></tr>
+      <tr><td>Standard Deviation (ms)</td><td>${stats.cypress.stdDevMs}</td><td>${stats.playwright.stdDevMs}</td><td>${stats.selenium.stdDevMs}</td></tr>
+      <tr><td>Min (ms)</td><td>${stats.cypress.minMs}</td><td>${stats.playwright.minMs}</td><td>${stats.selenium.minMs}</td></tr>
+      <tr><td>Median (ms)</td><td>${stats.cypress.medianMs}</td><td>${stats.playwright.medianMs}</td><td>${stats.selenium.medianMs}</td></tr>
+      <tr><td>Max (ms)</td><td>${stats.cypress.maxMs}</td><td>${stats.playwright.maxMs}</td><td>${stats.selenium.maxMs}</td></tr>
+    </tbody>
+  `;
+}
+</script>
+</body>
+</html>

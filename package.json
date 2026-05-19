@@ -5,17 +5,24 @@
   "engines": {
     "node": ">=18.0.0"
   },
+
   "scripts": {
     "setup-lab": "npm ci && npx playwright install",
     "run-playwright": "npx playwright test playwright-station/ --reporter=json > results/playwright.json",
-    "run-cypress": "npx cypress run",
-    "run-cypress-open": "npx cypress open" ,
-    "run-selenium": "node selenium-station/runner.js"
+    "run-cypress": "npx cypress run --reporter json --reporter-options output=results/cypress.json",
+    "run-cypress-open": "npx cypress open",
+    "run-selenium": "node selenium-station/runner.js",
+    "run-benchmark-cypress": "npx cypress run --spec 'cypress-station/benchmarking/**/*.cy.js'",
+    "run-benchmark-playwright": "npx playwright test playwright-station/benchmarking/",
+    "run-benchmark-selenium": "node selenium-station/benchmarking-runner.js",
+    "benchmark": "node benchmark.js"
   },
+
   "dependencies": {
     "@playwright/test": "^1.42.0",
     "selenium-webdriver": "^4.18.0"
   },
+
   "devDependencies": {
     "cypress": "^15.12.0"
   }
