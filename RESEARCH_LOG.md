@@ -2,7 +2,7 @@
 
 ## System Environment Baseline
 * **Operating System:** Windows 11 
-* **Node.js Version:** v24.14.0 
+* **Node.js Version:** v20.20.2
 * **Hardware:**  16GB RAM / AMD Ryzen 5 5600H with Radeon Graphics
 * **Network Condition:** Home Wi-Fi / Download Mbps 117.36, Upload Mbps 20.87, Ping ms 7, Download Latency 106, Upload Latency 220
 
