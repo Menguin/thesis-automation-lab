@@ -1,525 +1,61 @@
 const benchmarkData = {
   "metadata": {
-    "timestamp": "2026-05-19T11:54:17.550Z",
-    "totalRuns": 30,
+    "timestamp": "2026-09-26T18:11:07.352Z",
+    "totalRuns": 1,
     "node": "v20.20.2",
     "platform": "win32"
   },
   "runs": [
     {
       "runNumber": 1,
-      "timestamp": "2026-05-19T11:54:17.555Z",
+      "timestamp": "2026-09-26T18:11:07.358Z",
       "cypress": {
         "passed": true,
-        "durationMs": 21496
+        "durationMs": 80030
       },
       "playwright": {
         "passed": true,
-        "durationMs": 12056
+        "durationMs": 23088
       },
       "selenium": {
         "passed": true,
-        "durationMs": 9127
-      }
-    },
-    {
-      "runNumber": 2,
-      "timestamp": "2026-05-19T11:55:00.236Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 19282
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 5614
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7541
-      }
-    },
-    {
-      "runNumber": 3,
-      "timestamp": "2026-05-19T11:55:32.676Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 20699
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 5678
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7937
-      }
-    },
-    {
-      "runNumber": 4,
-      "timestamp": "2026-05-19T11:56:06.995Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 22790
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6777
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 11569
-      }
-    },
-    {
-      "runNumber": 5,
-      "timestamp": "2026-05-19T11:56:48.133Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 20913
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6382
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8342
-      }
-    },
-    {
-      "runNumber": 6,
-      "timestamp": "2026-05-19T11:57:23.772Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 28827
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6384
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8068
-      }
-    },
-    {
-      "runNumber": 7,
-      "timestamp": "2026-05-19T11:58:07.053Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24379
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6444
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 10598
-      }
-    },
-    {
-      "runNumber": 8,
-      "timestamp": "2026-05-19T11:58:48.475Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23368
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 9722
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7950
-      }
-    },
-    {
-      "runNumber": 9,
-      "timestamp": "2026-05-19T11:59:29.517Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24114
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6341
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7881
-      }
-    },
-    {
-      "runNumber": 10,
-      "timestamp": "2026-05-19T12:00:07.854Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24276
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6455
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7825
-      }
-    },
-    {
-      "runNumber": 11,
-      "timestamp": "2026-05-19T12:00:46.411Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24893
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6639
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7871
-      }
-    },
-    {
-      "runNumber": 12,
-      "timestamp": "2026-05-19T12:01:25.815Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 22572
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6364
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7841
-      }
-    },
-    {
-      "runNumber": 13,
-      "timestamp": "2026-05-19T12:02:02.595Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 22388
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6440
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7869
-      }
-    },
-    {
-      "runNumber": 14,
-      "timestamp": "2026-05-19T12:02:39.294Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 22997
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6446
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7902
-      }
-    },
-    {
-      "runNumber": 15,
-      "timestamp": "2026-05-19T12:03:16.640Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 22653
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6414
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 9442
-      }
-    },
-    {
-      "runNumber": 16,
-      "timestamp": "2026-05-19T12:03:55.152Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23283
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6641
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8089
-      }
-    },
-    {
-      "runNumber": 17,
-      "timestamp": "2026-05-19T12:04:33.167Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 22746
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6596
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 9037
-      }
-    },
-    {
-      "runNumber": 18,
-      "timestamp": "2026-05-19T12:05:11.548Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24894
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6706
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8668
-      }
-    },
-    {
-      "runNumber": 19,
-      "timestamp": "2026-05-19T12:05:51.819Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 25749
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6611
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8013
-      }
-    },
-    {
-      "runNumber": 20,
-      "timestamp": "2026-05-19T12:06:32.194Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23084
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6692
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7956
-      }
-    },
-    {
-      "runNumber": 21,
-      "timestamp": "2026-05-19T12:07:09.928Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23258
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6667
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8185
-      }
-    },
-    {
-      "runNumber": 22,
-      "timestamp": "2026-05-19T12:07:48.040Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23392
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6641
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 8326
-      }
-    },
-    {
-      "runNumber": 23,
-      "timestamp": "2026-05-19T12:08:26.401Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 25114
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6633
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 12266
-      }
-    },
-    {
-      "runNumber": 24,
-      "timestamp": "2026-05-19T12:09:10.416Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24641
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6473
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7944
-      }
-    },
-    {
-      "runNumber": 25,
-      "timestamp": "2026-05-19T12:09:49.478Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 25098
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6597
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 11124
-      }
-    },
-    {
-      "runNumber": 26,
-      "timestamp": "2026-05-19T12:10:32.299Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24738
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6703
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 10968
-      }
-    },
-    {
-      "runNumber": 27,
-      "timestamp": "2026-05-19T12:11:14.710Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 24865
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6765
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7957
-      }
-    },
-    {
-      "runNumber": 28,
-      "timestamp": "2026-05-19T12:11:54.300Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23996
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6596
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7977
-      }
-    },
-    {
-      "runNumber": 29,
-      "timestamp": "2026-05-19T12:12:32.871Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 21396
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6638
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7971
-      }
-    },
-    {
-      "runNumber": 30,
-      "timestamp": "2026-05-19T12:13:08.879Z",
-      "cypress": {
-        "passed": true,
-        "durationMs": 23378
-      },
-      "playwright": {
-        "passed": true,
-        "durationMs": 6631
-      },
-      "selenium": {
-        "passed": true,
-        "durationMs": 7970
+        "durationMs": 16410
       }
     }
   ],
   "statistics": {
     "cypress": {
-      "runs": 30,
-      "passed": 30,
+      "runs": 1,
+      "passed": 1,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 23509,
-      "stdDevMs": 1774,
-      "minMs": 19282,
-      "maxMs": 28827,
-      "medianMs": 23378
+      "meanMs": 80030,
+      "stdDevMs": 0,
+      "minMs": 80030,
+      "maxMs": 80030,
+      "medianMs": 80030
     },
     "playwright": {
-      "runs": 30,
-      "passed": 30,
+      "runs": 1,
+      "passed": 1,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 6792,
-      "stdDevMs": 1165,
-      "minMs": 5614,
-      "maxMs": 12056,
-      "medianMs": 6611
+      "meanMs": 23088,
+      "stdDevMs": 0,
+      "minMs": 23088,
+      "maxMs": 23088,
+      "medianMs": 23088
     },
     "selenium": {
-      "runs": 30,
-      "passed": 30,
+      "runs": 1,
+      "passed": 1,
       "failed": 0,
       "flakinessRate": 0,
-      "meanMs": 8674,
-      "stdDevMs": 1266,
-      "minMs": 7541,
-      "maxMs": 12266,
-      "medianMs": 8013
+      "meanMs": 16410,
+      "stdDevMs": 0,
+      "minMs": 16410,
+      "maxMs": 16410,
+      "medianMs": 16410
     }
   }
 };
